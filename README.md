@@ -90,7 +90,7 @@ suspend execution of the calling process until specified seconds.
 
 **Returns**
 
-1.  number: greater than 0 on success, or -1 on failure.
+1.  number: greater than or equal to 0 on success, or -1 on failure.
 
 2.  errno: EINVAL, or dependent on a system.
 
