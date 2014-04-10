@@ -21,9 +21,9 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 #include <errno.h>
-//#include <signal.h>
 #include <lauxlib.h>
 #include <lualib.h>
 
@@ -167,6 +167,7 @@ static int fork_lua( lua_State *L )
     return 2;
 }
 
+
 static int sleep_lua( lua_State *L )
 {
     if( !lua_gettop( L ) || !lua_isnumber( L, 1 ) ){
@@ -186,6 +187,20 @@ static int sleep_lua( lua_State *L )
 }
 
 
+static int strerror_lua( lua_State *L )
+{
+    int err = errno;
+    
+    if( !lua_isnoneornil( L, 1 ) ){
+        err = luaL_checkint( L, 1 );
+    }
+    
+    lua_pushstring( L, strerror( err ) );
+    
+    return 1;
+}
+
+
 LUALIB_API int luaopen_process( lua_State *L )
 {
     struct luaL_Reg method[] = {
@@ -200,6 +215,7 @@ LUALIB_API int luaopen_process( lua_State *L )
         { "chdir", chdir_lua },
         { "fork", fork_lua },
         { "sleep", sleep_lua },
+        { "strerror", strerror_lua },
         { NULL, NULL }
     };
     int i = 0;
