@@ -95,3 +95,18 @@ suspend execution of the calling process until specified seconds.
 2.  errno: EINVAL, or dependent on a system.
 
 
+
+### strerror( errno )
+
+returns a message string corresponding to errno.
+
+**Parameters**
+
+-   errno: error number that defined in errno.h. 
+    if passed argument is nil then to use global errno.
+
+**Returns**
+
+1.  string: error message string.
+
+
