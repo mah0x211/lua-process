@@ -187,6 +187,13 @@ static int sleep_lua( lua_State *L )
 }
 
 
+static int errno_lua( lua_State *L )
+{
+    lua_pushinteger( L, errno );
+    return 1;
+}
+
+
 static int strerror_lua( lua_State *L )
 {
     int err = errno;
@@ -215,6 +222,7 @@ LUALIB_API int luaopen_process( lua_State *L )
         { "chdir", chdir_lua },
         { "fork", fork_lua },
         { "sleep", sleep_lua },
+        { "errno", errno_lua },
         { "strerror", strerror_lua },
         { NULL, NULL }
     };
