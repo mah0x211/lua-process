@@ -95,6 +95,14 @@ suspend execution of the calling process until specified seconds.
 2.  errno: EINVAL, or dependent on a system.
 
 
+### errno()
+
+returns a errno.
+
+**Returns**
+
+1.  errno: current process/thread errno.
+
 
 ### strerror( errno )
 
