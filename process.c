@@ -24,6 +24,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <errno.h>
+#include <sys/resource.h>
 #include <lauxlib.h>
 #include <lualib.h>
 
