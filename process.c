@@ -135,21 +135,16 @@ static int getrusage_lua( lua_State *L )
 static int chdir_lua( lua_State *L )
 {
     size_t len = 0;
-    const char *dir;
+    const char *dir = luaL_checklstring( L, 1, &len );
     
-    if( !lua_gettop( L ) || !( dir = lua_tolstring( L, 1, &len ) ) ){
-        errno = EINVAL;
-    }
-    else if( chdir( dir ) == 0 ){
-        lua_pushboolean( L, 1 );
-        return 1;
+    if( chdir( dir ) == 0 ){
+        return 0;
     }
     
     // got error
-    lua_pushboolean( L, 0 );
     lua_pushinteger( L, errno );
     
-    return 2;
+    return 1;
 }
 
 
