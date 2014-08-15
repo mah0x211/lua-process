@@ -77,9 +77,7 @@ change current working directory.
 
 **Returns**
 
-1.  boolean: true on success, or false on failure.
-
-2.  errno: EINVAL, or dependent on a system.
+1.  errno: dependent on a system.
 
 
 ### fork()
