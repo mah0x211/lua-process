@@ -166,20 +166,10 @@ static int fork_lua( lua_State *L )
 
 static int sleep_lua( lua_State *L )
 {
-    if( !lua_gettop( L ) || !lua_isnumber( L, 1 ) ){
-        errno = EINVAL;
-    }
-    else {
-        unsigned int sec = (unsigned int)lua_tointeger( L, 1 );
-        lua_pushinteger( L, sleep( sec ) );
-        return 1;
-    }
+    lua_Integer sec = luaL_checkinteger( L, 1 );
     
-    // got error
-    lua_pushinteger( L, -1 );
-    lua_pushinteger( L, errno );
-    
-    return 2;
+    lua_pushinteger( L, sleep( sec ) );
+    return 1;
 }
 
 
