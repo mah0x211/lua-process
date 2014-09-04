@@ -174,6 +174,20 @@ static int sleep_lua( lua_State *L )
 }
 
 
+static int nsleep_lua( lua_State *L )
+{
+    lua_Integer nsec = luaL_checkinteger( L, 1 );
+    struct timespec req = {
+        .tv_sec = nsec / UINT64_C(1000000000),
+        .tv_nsec = nsec % UINT64_C(1000000000)
+    };
+    
+    lua_pushinteger( L, nanosleep( &req, NULL ) );
+    
+    return 1;
+}
+
+
 static int errno_lua( lua_State *L )
 {
     lua_pushinteger( L, errno );
@@ -226,6 +240,7 @@ LUALIB_API int luaopen_process( lua_State *L )
         { "chdir", chdir_lua },
         { "fork", fork_lua },
         { "sleep", sleep_lua },
+        { "nsleep", nsleep_lua },
         { "errno", errno_lua },
         { "strerror", strerror_lua },
         { "gettimeofday", gettimeofday_lua },
