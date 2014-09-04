@@ -102,9 +102,20 @@ suspend execution of the calling process until specified seconds.
 
 **Returns**
 
-1.  number: greater than or equal to 0 on success, or -1 on failure.
+1.  number: 0 on success, and >0 if an error occurs.
 
-2.  errno: EINVAL, or dependent on a system.
+
+### nsleep( nsec )
+
+suspend execution of the calling process until specified nanoseconds.
+
+**Parameters**
+
+-   nsec: unsigned integer.
+
+**Returns**
+
+1.  number: 0 on success, or -1 on failure.
 
 
 ### errno()
@@ -130,3 +141,10 @@ returns a message string corresponding to errno.
 1.  string: error message string.
 
 
+### gettimeofday()
+
+get the time as well as a timezone
+
+**Returns**
+
+1   sec: >0 on success, or -1 on failure.
