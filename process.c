@@ -25,6 +25,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <sys/resource.h>
+#include <sys/time.h>
 #include <lauxlib.h>
 #include <lualib.h>
 
@@ -194,6 +195,23 @@ static int strerror_lua( lua_State *L )
 }
 
 
+static int gettimeofday_lua( lua_State *L )
+{
+    struct timeval tv;
+    
+    if( gettimeofday( &tv, NULL ) == 0 ){
+        lua_pushnumber( L, (lua_Number)tv.tv_sec +
+                         (lua_Number)tv.tv_usec/1000000 );
+    }
+    // got error
+    else {
+        lua_pushinteger( L, -1 );
+    }
+    
+    return 1;
+}
+
+
 LUALIB_API int luaopen_process( lua_State *L )
 {
     struct luaL_Reg method[] = {
@@ -210,6 +228,7 @@ LUALIB_API int luaopen_process( lua_State *L )
         { "sleep", sleep_lua },
         { "errno", errno_lua },
         { "strerror", strerror_lua },
+        { "gettimeofday", gettimeofday_lua },
         { NULL, NULL }
     };
     int i = 0;
