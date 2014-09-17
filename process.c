@@ -29,6 +29,21 @@
 #include <lauxlib.h>
 #include <lualib.h>
 
+
+#define lstate_num2tbl(L,k,v) do{ \
+    lua_pushstring(L,k); \
+    lua_pushnumber(L,v); \
+    lua_rawset(L,-3); \
+}while(0)
+
+
+#define lstate_fn2tbl(L,k,v) do{ \
+    lua_pushstring(L,k); \
+    lua_pushcfunction(L,v); \
+    lua_rawset(L,-3); \
+}while(0)
+
+
 static int getpid_lua( lua_State *L )
 {
     lua_pushinteger( L, getpid() );
@@ -86,11 +101,6 @@ static int getcwd_lua( lua_State *L )
 }
 
 
-#define push_num2tbl(L,k,v) do{ \
-    lua_pushstring(L,k); \
-    lua_pushnumber(L,v); \
-    lua_rawset(L,-3); \
-}while(0)
 
 static int getrusage_lua( lua_State *L )
 {
@@ -98,29 +108,29 @@ static int getrusage_lua( lua_State *L )
     
     if( getrusage( RUSAGE_SELF, &usage ) == 0 ){
         lua_newtable( L );
-        push_num2tbl( L, "maxrss", usage.ru_maxrss );
-        push_num2tbl( L, "ixrss", usage.ru_ixrss );
-        push_num2tbl( L, "idrss", usage.ru_idrss );
-        push_num2tbl( L, "isrss", usage.ru_isrss );
-        push_num2tbl( L, "minflt", usage.ru_minflt );
-        push_num2tbl( L, "majflt", usage.ru_majflt );
-        push_num2tbl( L, "nswap", usage.ru_nswap );
-        push_num2tbl( L, "inblock", usage.ru_inblock );
-        push_num2tbl( L, "oublock", usage.ru_oublock );
-        push_num2tbl( L, "msgsnd", usage.ru_msgsnd );
-        push_num2tbl( L, "msgrcv", usage.ru_msgrcv );
-        push_num2tbl( L, "nsignals", usage.ru_nsignals );
-        push_num2tbl( L, "nvcsw", usage.ru_nvcsw );
-        push_num2tbl( L, "nivcsw", usage.ru_nivcsw );
+        lstate_num2tbl( L, "maxrss", usage.ru_maxrss );
+        lstate_num2tbl( L, "ixrss", usage.ru_ixrss );
+        lstate_num2tbl( L, "idrss", usage.ru_idrss );
+        lstate_num2tbl( L, "isrss", usage.ru_isrss );
+        lstate_num2tbl( L, "minflt", usage.ru_minflt );
+        lstate_num2tbl( L, "majflt", usage.ru_majflt );
+        lstate_num2tbl( L, "nswap", usage.ru_nswap );
+        lstate_num2tbl( L, "inblock", usage.ru_inblock );
+        lstate_num2tbl( L, "oublock", usage.ru_oublock );
+        lstate_num2tbl( L, "msgsnd", usage.ru_msgsnd );
+        lstate_num2tbl( L, "msgrcv", usage.ru_msgrcv );
+        lstate_num2tbl( L, "nsignals", usage.ru_nsignals );
+        lstate_num2tbl( L, "nvcsw", usage.ru_nvcsw );
+        lstate_num2tbl( L, "nivcsw", usage.ru_nivcsw );
         lua_pushstring( L, "utime" );
         lua_newtable( L );
-        push_num2tbl( L, "sec", usage.ru_utime.tv_sec );
-        push_num2tbl( L, "usec", usage.ru_utime.tv_usec );
+        lstate_num2tbl( L, "sec", usage.ru_utime.tv_sec );
+        lstate_num2tbl( L, "usec", usage.ru_utime.tv_usec );
         lua_rawset( L, -3 );
         lua_pushstring( L, "stime" );
         lua_newtable( L );
-        push_num2tbl( L, "sec", usage.ru_stime.tv_sec );
-        push_num2tbl( L, "usec", usage.ru_stime.tv_usec );
+        lstate_num2tbl( L, "sec", usage.ru_stime.tv_sec );
+        lstate_num2tbl( L, "usec", usage.ru_stime.tv_usec );
         lua_rawset( L, -3 );
         
         return 1;
@@ -247,16 +257,15 @@ LUALIB_API int luaopen_process( lua_State *L )
         { "gettimeofday", gettimeofday_lua },
         { NULL, NULL }
     };
-    int i = 0;
-    
+    struct luaL_Reg *ptr = method;
+
     
     lua_newtable( L );
     // add methods
-    for(; method[i].name; i++ ){
-        lua_pushstring( L, method[i].name );
-        lua_pushcfunction( L, method[i].func );
-        lua_rawset( L, -3 );
-    }
+    do {
+        lstate_fn2tbl( L, ptr->name, ptr->func );
+        ptr++;
+    } while( ptr->name );
     
     return 1;
 }
