@@ -53,7 +53,7 @@ get working directory pathname.
 
 1.  pathname: working directory pathname on success, or nil on failure.
 
-2.  errno: dependent on a system.
+2.  errstr: dependent on a system.
 
 
 ### getrusage()
@@ -64,7 +64,7 @@ get information about resource utilization.
 
 1.  usage: table of struct rusage on success, or nil on failure.
 
-2.  errno: dependent on a system.
+2.  errstr: dependent on a system.
 
 
 ### chdir( path )
@@ -77,7 +77,7 @@ change current working directory.
 
 **Returns**
 
-1.  errno: dependent on a system.
+1.  errstr: dependent on a system.
 
 
 ### fork()
@@ -89,7 +89,7 @@ create child process.
 1.  number: 0 to the child process, and a child process id to the
     calling process on success, or -1 on failure.
 
-2.  errno: dependent on a system.
+2.  errstr: dependent on a system.
 
 
 ### sleep( sec )
