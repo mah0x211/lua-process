@@ -237,6 +237,22 @@ static int gettimeofday_lua( lua_State *L )
 }
 
 
+static inline int iserrno_lua( lua_State *L, const int syserrno )
+{
+    int err = errno;
+    
+    if( lua_gettop( L ) ){
+        err = luaL_checkint( L, 1 );
+    }
+    lua_pushboolean( L, err = syserrno );
+
+    return 1;
+}
+
+
+#define GEN_ERRNO_IMPL
+
+
 LUALIB_API int luaopen_process( lua_State *L )
 {
     struct luaL_Reg method[] = {
@@ -255,6 +271,7 @@ LUALIB_API int luaopen_process( lua_State *L )
         { "errno", errno_lua },
         { "strerror", strerror_lua },
         { "gettimeofday", gettimeofday_lua },
+#define GEN_ERRNO_DECL
         { NULL, NULL }
     };
     struct luaL_Reg *ptr = method;
