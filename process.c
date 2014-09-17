@@ -80,7 +80,7 @@ static int getcwd_lua( lua_State *L )
     
     // got error
     lua_pushnil( L );
-    lua_pushinteger( L, errno );
+    lua_pushstring( L, strerror( errno ) );
     
     return 2;
 }
@@ -128,7 +128,7 @@ static int getrusage_lua( lua_State *L )
     
     // got error
     lua_pushnil( L );
-    lua_pushinteger( L, errno );
+    lua_pushstring( L, strerror( errno ) );
     
     return 2;
 }
@@ -143,7 +143,7 @@ static int chdir_lua( lua_State *L )
     }
     
     // got error
-    lua_pushinteger( L, errno );
+    lua_pushstring( L, strerror( errno ) );
     
     return 1;
 }
@@ -159,7 +159,7 @@ static int fork_lua( lua_State *L )
     }
     
     // got error
-    lua_pushinteger( L, errno );
+    lua_pushstring( L, strerror( errno ) );
     
     return 2;
 }
@@ -216,13 +216,14 @@ static int gettimeofday_lua( lua_State *L )
     if( gettimeofday( &tv, NULL ) == 0 ){
         lua_pushnumber( L, (lua_Number)tv.tv_sec +
                          (lua_Number)tv.tv_usec/1000000 );
+        return 1;
     }
+
     // got error
-    else {
-        lua_pushinteger( L, -1 );
-    }
-    
-    return 1;
+    lua_pushinteger( L, -1 );
+    lua_pushstring( L, strerror( errno ) );
+
+    return 2;
 }
 
 
