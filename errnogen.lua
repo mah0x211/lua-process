@@ -25,33 +25,21 @@ end
 
 
 local function codeGen( arr )
-    local fmtMethod = [[
+    local fmtConstants = [[
 #ifdef %s
-static int is%s_lua( lua_State *L ){
-    return iserrno_lua( L, %s );
-}
+    lstate_num2tbl( L, "%s", %s );
 #endif
 
 ]];
-
-    local fmtMethodDef = [[
-#ifdef %s
-        { "is%s", is%s_lua },
-#endif
-
-]];
-    local method = '';
-    local methodDef = '';
+    local errnoConstants = '';
     local _, v;
 
     for i, v in ipairs( arr ) do
-        method = method .. fmtMethod:format( v, v, v );
-        methodDef = methodDef .. fmtMethodDef:format( v, v, v );
+        errnoConstants = errnoConstants .. fmtConstants:format( v, v, v );
     end
 
     return {
-        IMPL = method,
-        DECL = methodDef
+        DECL = errnoConstants
     };
 end
 
