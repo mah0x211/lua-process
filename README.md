@@ -8,13 +8,6 @@ process module.
 luarocks install --from=http://mah0x211.github.io/rocks/ process
 ```
 
-or 
-
-```sh
-git clone https://github.com/mah0x211/lua-process.git
-cd lua-process
-luarocks make
-```
 
 ## functions
 
