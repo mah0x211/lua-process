@@ -27,13 +27,21 @@
 #include <errno.h>
 #include <sys/resource.h>
 #include <sys/time.h>
-#include <lauxlib.h>
+#include <lua.h>
 #include <lualib.h>
+#include <lauxlib.h>
 
 
 #define lstate_num2tbl(L,k,v) do{ \
     lua_pushstring(L,k); \
     lua_pushnumber(L,v); \
+    lua_rawset(L,-3); \
+}while(0)
+
+
+#define lstate_bool2tbl(L,k,v) do{ \
+    lua_pushstring(L,k); \
+    lua_pushboolean(L,v); \
     lua_rawset(L,-3); \
 }while(0)
 
