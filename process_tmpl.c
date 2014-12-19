@@ -164,12 +164,13 @@ static int fork_lua( lua_State *L )
 {
     pid_t pid = fork();
     
-    lua_pushinteger( L, pid );
     if( pid != -1 ){
+        lua_pushinteger( L, pid );
         return 1;
     }
     
     // got error
+    lua_pushnil( L );
     lua_pushstring( L, strerror( errno ) );
     
     return 2;
