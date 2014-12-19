@@ -31,6 +31,26 @@
 extern char **environ;
 
 // MARK: API
+static int getenv_lua( lua_State *L )
+{
+    char **ptr = environ;
+    char *val = NULL;
+    
+    lua_newtable( L );
+    while( *ptr )
+    {
+        if( ( val = strchr( *ptr, '=' ) ) ){
+            lua_pushlstring( L, *ptr, (ptrdiff_t)val - (ptrdiff_t)*ptr );
+            lua_pushstring( L, val + 1 );
+            lua_rawset( L, -3 );
+        }
+        ptr++;
+    }
+    
+    return 1;
+}
+
+
 static int getpid_lua( lua_State *L )
 {
     lua_pushinteger( L, getpid() );
@@ -438,6 +458,7 @@ static int gettimeofday_lua( lua_State *L )
 LUALIB_API int luaopen_process( lua_State *L )
 {
     struct luaL_Reg method[] = {
+        { "getenv", getenv_lua },
         { "getpid", getpid_lua },
         { "getppid", getppid_lua },
         { "getgid", getgid_lua },
