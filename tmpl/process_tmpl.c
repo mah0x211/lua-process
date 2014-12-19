@@ -110,7 +110,6 @@ static int getcwd_lua( lua_State *L )
 }
 
 
-
 static int getrusage_lua( lua_State *L )
 {
     struct rusage usage;
@@ -183,6 +182,55 @@ static int fork_lua( lua_State *L )
     
     return 2;
 }
+
+
+static int waitpid_lua( lua_State *L )
+{
+    const int argc = lua_gettop( L );
+    pid_t pid = luaL_checkinteger( L, 1 );
+    pid_t rpid = 0;
+    int rc = 0;
+    int opts = 0;
+    
+    // check opts
+    if( argc > 1 )
+    {
+        int i = 2;
+        
+        for(; i <= argc; i++ ){
+            opts |= luaL_optint( L, i, 0 );
+        }
+    }
+    
+    if( ( rpid = waitpid( pid, &rc, opts ) ) != -1 )
+    {
+        lua_createtable( L, 0, 1 );
+        if( WIFEXITED( rc ) ){
+            lstate_num2tbl( L, "exit", WEXITSTATUS( rc ) );
+        }
+        else if( WIFSIGNALED( rc ) ){
+            lstate_num2tbl( L, "signal", WTERMSIG( rc ) );
+#ifdef WCOREDUMP
+            if( WCOREDUMP( rc ) ){
+                lstate_bool2tbl( L, "coredump", 1 );
+            }
+#endif
+        }
+        else if( WIFSTOPPED( rc ) ){
+            lstate_num2tbl( L, "stop", WSTOPSIG( rc ) );
+        } else if( WIFCONTINUED( rc ) ){
+            lstate_bool2tbl( L, "continue", 1 );
+        }
+        return 1;
+    }
+    
+    // got error
+    lua_pushnil( L );
+    lua_pushstring( L, strerror( errno ) );
+    
+    return 2;
+}
+
 
 
 static int sleep_lua( lua_State *L )
@@ -260,6 +308,7 @@ LUALIB_API int luaopen_process( lua_State *L )
         { "getrusage", getrusage_lua },
         { "chdir", chdir_lua },
         { "fork", fork_lua },
+        { "waitpid", waitpid_lua },
         { "sleep", sleep_lua },
         { "nsleep", nsleep_lua },
         { "errno", errno_lua },
@@ -269,14 +318,15 @@ LUALIB_API int luaopen_process( lua_State *L )
     };
     struct luaL_Reg *ptr = method;
 
-    
     lua_newtable( L );
     // add methods
     do {
         lstate_fn2tbl( L, ptr->name, ptr->func );
         ptr++;
     } while( ptr->name );
-    
+
+    // set waitpid options
+#define GEN_WAITPID_OPT_DECL
     // set errno
 #define GEN_ERRNO_DECL
 
