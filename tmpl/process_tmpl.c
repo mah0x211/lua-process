@@ -325,8 +325,8 @@ static int exec_lua( lua_State *L )
                     return 2;
                 }
             }
-            
-            // push last NULL item
+        // add last NULL terminated item into arg array.
+        default:
             if( arr_push( &argv, NULL ) == -1 ){
                 arr_dispose( &argv );
                 arr_dispose( &envs );
@@ -335,7 +335,6 @@ static int exec_lua( lua_State *L )
                 lua_pushstring( L, strerror( errno ) );
                 return 2;
             }
-        break;
     }
     
     pid = fork();
