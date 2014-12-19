@@ -3,7 +3,7 @@ local cjson = require('cjson');
 local fork = require('process').fork;
 local exec = require('process').exec;
 local waitpid = require('process').waitpid;
-local inspect = require('util').inspect;
+local env = require('process').getenv();
 local cmd = './exec_test.lua';
 local argv = { 'hello', 'world' };
 local cmp = cjson.encode(cjson.decode(cjson.encode({
@@ -11,21 +11,29 @@ local cmp = cjson.encode(cjson.decode(cjson.encode({
     [2] = "world",
     [-1] = "lua",
     [0] = cmd,
-    stdin = argv
+    stdin = argv,
+    env = 'test env'
 })));
 local pid, msg;
 
-cmd = exec( cmd, argv, { EXEC_TEST='test env' } );
-pid = ifNil( cmd:pid() );
+-- set env
+env.EXEC_TEST='test env';
+cmd = ifNil( exec( cmd, argv, env ) );
 
+pid = ifNil( cmd:pid() );
 ifNotEqual( type( pid ), 'number' );
+
 -- send msg: should append LF
 ifNotTrue( cmd:stdin( cjson.encode( argv ) .. '\n' ) );
+
 -- read json from stdout
-msg = cjson.encode(cjson.decode( cmd:stdout() ));
+msg = cjson.decode( cmd:stdout() );
+msg = cjson.encode( msg );
 ifNotEqual( cmp, msg );
+
 -- read json from stderr
-msg = cjson.encode(cjson.decode( cmd:stderr() ));
+msg = cjson.decode( cmd:stderr() );
+msg = cjson.encode( msg );
 ifNotEqual( cmp, msg );
 
 -- close test
