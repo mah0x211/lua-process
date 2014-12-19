@@ -12,12 +12,10 @@ local cmp = cjson.encode(cjson.decode(cjson.encode({
     [-1] = "lua",
     [0] = cmd,
     stdin = argv,
-    env = 'test env'
 })));
 local pid, msg;
 
 -- set env
-env.EXEC_TEST='test env';
 cmd = ifNil( exec( cmd, argv, env ) );
 
 pid = ifNil( cmd:pid() );
