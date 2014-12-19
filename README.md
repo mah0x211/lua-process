@@ -22,6 +22,15 @@ these constants defined at the `process.*`
 
 ## API
 
+### getenv()
+
+get environment values.
+
+**Returns**
+
+1. env: env values table.
+
+
 ### getppid() / getpid()
 
 get parent or calling process id.
@@ -121,6 +130,23 @@ please refer to `man 2 waitpid` for more details.
 2. errstr: dependent on a system.
 
 
+### exec( path [, args [, env]] )
+
+execute a file.  
+please refer to `man 2 execve` for more details.
+
+**Parameters**
+
+- path: filepath.
+- args: argument array table.
+- env: argument key-value pair table.
+
+**Returns**
+
+1. child: instantance of `process.child` module.
+2. errstr: dependent on a system.
+
+
 ### sleep( sec )
 
 suspend execution of the calling process until specified seconds.
@@ -177,3 +203,75 @@ get the time as well as a timezone
 **Returns**
 
 1. sec: >0 on success, or -1 on failure.
+
+
+## Instance of `process.child` module
+
+`process.exec` API return this instance on success.
+
+**Example**
+
+```lua
+local exec = require('process').exec;
+local cmd = exec( 'echo', { 'hello world' } );
+-- read from stdout
+print( cmd:stdout() ); -- 'hello world\n'
+```
+### child:pid()
+
+get process id.
+
+**Returns**
+
+1. pid: process id.
+
+
+### child:stdout()
+
+read the data from stdout of child process.
+
+**Returns**
+
+1. data: string.
+2. errstr: dependent on a system.
+3. again: true if got a EAGAIN or EWOULDBLOCK internally.
+
+
+### child:stderr()
+
+read the data from stderr of child process.
+
+**Returns**  
+same as `child:stdout()`.
+
+
+### child:stdin( data )
+
+write the data from stdout of child process.
+
+**Parameters**
+
+- data: string.
+
+
+**Returns**
+
+1. ok: true on success, false on failure.
+2. errstr: dependent on a system.
+3. again: true if got a EAGAIN or EWOULDBLOCK internally.
+
+
+### child:close( [signo] )
+
+send signal to a child process.
+
+**Parameters**
+
+- signo: signal number. default `SIGTERM`.
+
+
+**Returns**
+
+1. ok: true on success, false on failure.
+2. errstr: dependent on a system.
+
