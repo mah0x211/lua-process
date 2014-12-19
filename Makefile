@@ -1,19 +1,23 @@
 TARGET=$(PACKAGE).$(LIB_EXTENSION)
-SRC=process.c
-OBJ=process.o
+VARS=$(wildcard $(VARDIR)/*.txt)
+TMPL=$(wildcard $(TMPLDIR)/*.c)
+SRCS=$(wildcard $(SRCDIR)/*.c)
+OBJS=$(SRCS:.c=.o)
 
 
 all: preprocess $(TARGET)
 
-$(TARGET):
-	$(CC) $(CFLAGS) $(WARNINGS) $(CPPFLAGS) -o $(OBJ) -c $(SRC)
-	$(CC) -o $(TARGET) $(LDFLAGS) $(OBJ)
+%.o: %.c
+	$(CC) $(CFLAGS) $(WARNINGS) $(CPPFLAGS) -o $@ -c $<
+
+$(TARGET): $(OBJS)
+	$(CC) -o $@ $^ $(LDFLAGS) $(LIBS) $(PLATFORM_LDFLAGS)
 
 preprocess:
-	lua ./errnogen.lua
+	lua ./codegen.lua $(VARS) $(TMPL)
 
 install:
 	mkdir -p $(LIBDIR)
 	cp $(TARGET) $(LIBDIR)
-	rm -f $(OBJ) $(TARGET)
+	rm -f $(OBJS) $(TARGET)
 
