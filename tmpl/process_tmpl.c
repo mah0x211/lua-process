@@ -202,22 +202,29 @@ static int waitpid_lua( lua_State *L )
         }
     }
     
-    if( ( rpid = waitpid( pid, &rc, opts ) ) != -1 )
+    rpid = waitpid( pid, &rc, opts );
+    // WNOHANG
+    if( rpid == 0 ){
+        lua_createtable( L, 0, 2 );
+        lstate_num2tbl( L, "pid", pid );
+        lstate_bool2tbl( L, "nohang", 1 );
+        return 1;
+    }
+    else if( rpid != -1 )
     {
-        lua_createtable( L, 0, 1 );
+        lua_createtable( L, 0, 2 );
+        lstate_num2tbl( L, "pid", rpid );
+        // exit status
         if( WIFEXITED( rc ) ){
             lstate_num2tbl( L, "exit", WEXITSTATUS( rc ) );
         }
+        // exit signal number
         else if( WIFSIGNALED( rc ) ){
-            lstate_num2tbl( L, "signal", WTERMSIG( rc ) );
-#ifdef WCOREDUMP
-            if( WCOREDUMP( rc ) ){
-                lstate_bool2tbl( L, "coredump", 1 );
-            }
-#endif
+            lstate_num2tbl( L, "termsig", WTERMSIG( rc ) );
         }
+        // stop signal 
         else if( WIFSTOPPED( rc ) ){
-            lstate_num2tbl( L, "stop", WSTOPSIG( rc ) );
+            lstate_num2tbl( L, "stopsig", WSTOPSIG( rc ) );
         } else if( WIFCONTINUED( rc ) ){
             lstate_bool2tbl( L, "continue", 1 );
         }
