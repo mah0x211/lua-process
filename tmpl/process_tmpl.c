@@ -342,8 +342,12 @@ static int exec_lua( lua_State *L )
     if( pid == 0 )
     {
         // set std-in-out-err
-        if( iop_set( &iop ) == 0 ){
-            execve( cmd, argv.elts, envs.len ? envs.elts : environ );
+        if( iop_set( &iop ) == 0 )
+        {
+            if( envs.len ){
+                environ = envs.elts;
+            }
+            execvp( cmd, argv.elts );
         }
         arr_dispose( &argv );
         arr_dispose( &envs );
