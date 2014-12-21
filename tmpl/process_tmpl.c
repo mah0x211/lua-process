@@ -30,7 +30,7 @@
 
 extern char **environ;
 
-// MARK: API
+// MARK: environment
 static int getenv_lua( lua_State *L )
 {
     char **ptr = environ;
@@ -51,6 +51,7 @@ static int getenv_lua( lua_State *L )
 }
 
 
+// MARK: process id
 static int getpid_lua( lua_State *L )
 {
     lua_pushinteger( L, getpid() );
@@ -64,6 +65,7 @@ static int getppid_lua( lua_State *L )
 }
 
 
+// MARK: group id
 static int getgid_lua( lua_State *L )
 {
     lua_pushinteger( L, getgid() );
@@ -108,6 +110,7 @@ static int setegid_lua( lua_State *L )
 }
 
 
+// MARK: user id
 static int getuid_lua( lua_State *L )
 {
     lua_pushinteger( L, getuid() );
@@ -152,24 +155,7 @@ static int seteuid_lua( lua_State *L )
 }
 
 
-static int getcwd_lua( lua_State *L )
-{
-    char *cwd = getcwd( NULL, 0 );
-    
-    if( cwd ){
-        lua_pushstring( L, cwd );
-        free( cwd );
-        return 1;
-    }
-    
-    // got error
-    lua_pushnil( L );
-    lua_pushstring( L, strerror( errno ) );
-    
-    return 2;
-}
-
-
+// MARK: resource
 static int getrusage_lua( lua_State *L )
 {
     struct rusage usage;
@@ -212,6 +198,25 @@ static int getrusage_lua( lua_State *L )
 }
 
 
+// MARK: current working directory
+static int getcwd_lua( lua_State *L )
+{
+    char *cwd = getcwd( NULL, 0 );
+    
+    if( cwd ){
+        lua_pushstring( L, cwd );
+        free( cwd );
+        return 1;
+    }
+    
+    // got error
+    lua_pushnil( L );
+    lua_pushstring( L, strerror( errno ) );
+    
+    return 2;
+}
+
+
 static int chdir_lua( lua_State *L )
 {
     const char *dir = luaL_checkstring( L, 1 );
@@ -227,6 +232,7 @@ static int chdir_lua( lua_State *L )
 }
 
 
+// MARK: child process
 static int fork_lua( lua_State *L )
 {
     pid_t pid = fork();
@@ -467,6 +473,7 @@ static int exec_lua( lua_State *L )
 }
 
 
+// MARK: suspend process
 static int sleep_lua( lua_State *L )
 {
     lua_Integer sec = luaL_checkinteger( L, 1 );
@@ -490,6 +497,7 @@ static int nsleep_lua( lua_State *L )
 }
 
 
+// MARK: errors
 static int errno_lua( lua_State *L )
 {
     lua_pushinteger( L, errno );
@@ -511,6 +519,8 @@ static int strerror_lua( lua_State *L )
 }
 
 
+
+// MARK: time
 static int gettimeofday_lua( lua_State *L )
 {
     struct timeval tv;
@@ -543,8 +553,8 @@ LUALIB_API int luaopen_process( lua_State *L )
         { "setuid", setuid_lua },
         { "geteuid", geteuid_lua },
         { "seteuid", seteuid_lua },
-        { "getcwd", getcwd_lua },
         { "getrusage", getrusage_lua },
+        { "getcwd", getcwd_lua },
         { "chdir", chdir_lua },
         { "fork", fork_lua },
         { "waitpid", waitpid_lua },
