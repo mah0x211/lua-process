@@ -120,7 +120,7 @@ static int getuid_lua( lua_State *L )
 
 static int setuid_lua( lua_State *L )
 {
-    lua_Integer uid = luaL_checkinteger( L, 1 );
+    uid_t uid = (uid_t)luaL_checkinteger( L, 1 );
     
     if( setuid( uid ) == 0 ){
         return 0;
@@ -142,7 +142,7 @@ static int geteuid_lua( lua_State *L )
 
 static int seteuid_lua( lua_State *L )
 {
-    lua_Integer uid = luaL_checkinteger( L, 1 );
+    uid_t uid = (uid_t)luaL_checkinteger( L, 1 );
     
     if( seteuid( uid ) == 0 ){
         return 0;
