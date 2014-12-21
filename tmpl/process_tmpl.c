@@ -75,7 +75,7 @@ static int getgid_lua( lua_State *L )
 
 static int setgid_lua( lua_State *L )
 {
-    lua_Integer gid = luaL_checkinteger( L, 1 );
+    gid_t gid = (gid_t)luaL_checkinteger( L, 1 );
     
     if( setgid( gid ) == 0 ){
         return 0;
@@ -97,7 +97,7 @@ static int getegid_lua( lua_State *L )
 
 static int setegid_lua( lua_State *L )
 {
-    lua_Integer gid = luaL_checkinteger( L, 1 );
+    gid_t gid = (gid_t)luaL_checkinteger( L, 1 );
     
     if( setegid( gid ) == 0 ){
         return 0;
