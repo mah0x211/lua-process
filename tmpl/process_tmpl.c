@@ -261,13 +261,28 @@ static int exec_lua( lua_State *L )
         return 2;
     }
     // manipute arg length
-    else if( argc > 3 ){
-        argc = 3;
+    else if( argc > 4 ){
+        argc = 4;
     }
     
     // check args
     switch( argc )
     {
+        // cwd
+        case 4:
+            if( !lua_isnoneornil( L, 4 ) )
+            {
+                const char *dir = luaL_checkstring( L, 4 );
+                
+                if( chdir( dir ) != 0 ){
+                    arr_dispose( &argv );
+                    arr_dispose( &envs );
+                    iop_dispose( &iop );
+                    lua_pushnil( L );
+                    lua_pushfstring( L, "chdir: %s", strerror( errno ) );
+                    return 2;
+                }
+            }
         // envs
         case 3:
             if( !lua_isnoneornil( L, 3 ) )
