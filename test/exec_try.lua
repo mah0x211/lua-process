@@ -16,7 +16,7 @@ local cmp = cjson.encode(cjson.decode(cjson.encode({
 local pid, msg;
 
 -- set env
-cmd = ifNil( exec( cmd, argv, env ) );
+cmd = ifNil( exec( cmd, argv, env, './' ) );
 
 pid = ifNil( cmd:pid() );
 ifNotEqual( type( pid ), 'number' );
