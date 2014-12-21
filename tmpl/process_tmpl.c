@@ -155,6 +155,25 @@ static int seteuid_lua( lua_State *L )
 }
 
 
+// MARK: session id
+static int getsid_lua( lua_State *L )
+{
+    pid_t pid = (pid_t)luaL_checkinteger( L, 1 );
+    pid_t sid = getsid( pid );
+    
+    if( sid != -1 ){
+        lua_pushinteger( L, sid );
+        return 1;
+    }
+    
+    // got error
+    lua_pushnil( L );
+    lua_pushstring( L, strerror( errno ) );
+    
+    return 2;
+}
+
+
 // MARK: resource
 static int getrusage_lua( lua_State *L )
 {
@@ -553,6 +572,7 @@ LUALIB_API int luaopen_process( lua_State *L )
         { "setuid", setuid_lua },
         { "geteuid", geteuid_lua },
         { "seteuid", seteuid_lua },
+        { "getsid", getsid_lua },
         { "getrusage", getrusage_lua },
         { "getcwd", getcwd_lua },
         { "chdir", chdir_lua },
