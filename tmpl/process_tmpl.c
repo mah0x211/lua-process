@@ -110,6 +110,22 @@ static int setegid_lua( lua_State *L )
 }
 
 
+static int setregid_lua( lua_State *L )
+{
+    gid_t rgid = (uid_t)luaL_checkinteger( L, 1 );
+    gid_t egid = (gid_t)luaL_checkinteger( L, 2 );
+    
+    if( setregid( rgid, egid ) == 0 ){
+        return 0;
+    }
+    
+    // got error
+    lua_pushstring( L, strerror( errno ) );
+    
+    return 1;
+}
+
+
 // MARK: user id
 static int getuid_lua( lua_State *L )
 {
@@ -601,6 +617,7 @@ LUALIB_API int luaopen_process( lua_State *L )
         { "setgid", setgid_lua },
         { "getegid", getegid_lua },
         { "setegid", setegid_lua },
+        { "setregid", setregid_lua },
         { "getuid", getuid_lua },
         { "setuid", setuid_lua },
         { "geteuid", geteuid_lua },
