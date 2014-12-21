@@ -70,6 +70,22 @@ static int getgid_lua( lua_State *L )
     return 1;
 }
 
+
+static int setgid_lua( lua_State *L )
+{
+    lua_Integer gid = luaL_checkinteger( L, 1 );
+    
+    if( setgid( gid ) == 0 ){
+        return 0;
+    }
+    
+    // got error
+    lua_pushstring( L, strerror( errno ) );
+    
+    return 1;
+}
+
+
 static int getegid_lua( lua_State *L )
 {
     lua_pushinteger( L, getegid() );
@@ -505,6 +521,7 @@ LUALIB_API int luaopen_process( lua_State *L )
         { "getpid", getpid_lua },
         { "getppid", getppid_lua },
         { "getgid", getgid_lua },
+        { "setgid", setgid_lua },
         { "getegid", getegid_lua },
         { "getuid", getuid_lua },
         { "setuid", setuid_lua },
