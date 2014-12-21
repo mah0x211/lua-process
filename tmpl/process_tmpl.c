@@ -149,10 +149,10 @@ static int getrusage_lua( lua_State *L )
     return 2;
 }
 
+
 static int chdir_lua( lua_State *L )
 {
-    size_t len = 0;
-    const char *dir = luaL_checklstring( L, 1, &len );
+    const char *dir = luaL_checkstring( L, 1 );
     
     if( chdir( dir ) == 0 ){
         return 0;
