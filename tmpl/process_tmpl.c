@@ -106,6 +106,21 @@ static int geteuid_lua( lua_State *L )
 }
 
 
+static int seteuid_lua( lua_State *L )
+{
+    lua_Integer uid = luaL_checkinteger( L, 1 );
+    
+    if( seteuid( uid ) == 0 ){
+        return 0;
+    }
+    
+    // got error
+    lua_pushstring( L, strerror( errno ) );
+    
+    return 1;
+}
+
+
 static int getcwd_lua( lua_State *L )
 {
     char *cwd = getcwd( NULL, 0 );
@@ -494,6 +509,7 @@ LUALIB_API int luaopen_process( lua_State *L )
         { "getuid", getuid_lua },
         { "setuid", setuid_lua },
         { "geteuid", geteuid_lua },
+        { "seteuid", seteuid_lua },
         { "getcwd", getcwd_lua },
         { "getrusage", getrusage_lua },
         { "chdir", chdir_lua },
