@@ -34,15 +34,16 @@ static int stdin_lua( lua_State *L )
     pchild_t *chd = luaL_checkudata( L, 1, PROCESS_CHILD_MT );
     size_t len = 0;
     const char *str = luaL_checklstring( L, 2, &len );
+    size_t remain = len;
     char *ptr = (char*)str;
     ssize_t bytes = 0;
     
     do
     {
         // got error
-        if( ( bytes = write( chd->fds[0], ptr, len ) ) == -1 )
+        if( ( bytes = write( chd->fds[0], ptr, remain ) ) == -1 )
         {
-            lua_pushboolean( L, 0 );
+            lua_pushinteger( L, remain );
             lua_pushstring( L, strerror( errno ) );
             // check non-blocking mode
             if( errno == EAGAIN || errno == EWOULDBLOCK ){
@@ -52,15 +53,14 @@ static int stdin_lua( lua_State *L )
             return 2;
         }
         // end-of-file or succeeded
-        else if( ( bytes == 0 && len == 0 ) || ( len -= bytes ) == 0 ){
+        else if( ( bytes == 0 && remain == 0 ) || ( remain -= bytes ) == 0 ){
             break;
         }
         ptr += bytes;
     
     } while(1);
     
-    lua_pushboolean( L, 1 );
-    
+    lua_pushinteger( L, len );
     return 1;
 }
 
