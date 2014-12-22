@@ -600,7 +600,7 @@ static int gettimeofday_lua( lua_State *L )
     }
 
     // got error
-    lua_pushinteger( L, -1 );
+    lua_pushnil( L );
     lua_pushstring( L, strerror( errno ) );
 
     return 2;
@@ -610,31 +610,42 @@ static int gettimeofday_lua( lua_State *L )
 LUALIB_API int luaopen_process( lua_State *L )
 {
     struct luaL_Reg method[] = {
+        // environment
         { "getenv", getenv_lua },
+        // process id
         { "getpid", getpid_lua },
         { "getppid", getppid_lua },
+        // group id
         { "getgid", getgid_lua },
         { "setgid", setgid_lua },
         { "getegid", getegid_lua },
         { "setegid", setegid_lua },
         { "setregid", setregid_lua },
+        // user id
         { "getuid", getuid_lua },
         { "setuid", setuid_lua },
         { "geteuid", geteuid_lua },
         { "seteuid", seteuid_lua },
         { "setreuid", setreuid_lua },
+        // session id
         { "getsid", getsid_lua },
         { "setsid", setsid_lua },
+        // resources
         { "getrusage", getrusage_lua },
+        // current working directory
         { "getcwd", getcwd_lua },
         { "chdir", chdir_lua },
+        // child process
         { "fork", fork_lua },
         { "waitpid", waitpid_lua },
         { "exec", exec_lua },
+        // suspend process
         { "sleep", sleep_lua },
         { "nsleep", nsleep_lua },
+        // errors
         { "errno", errno_lua },
         { "strerror", strerror_lua },
+        // time
         { "gettimeofday", gettimeofday_lua },
         { NULL, NULL }
     };
