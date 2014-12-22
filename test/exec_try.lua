@@ -22,7 +22,8 @@ pid = ifNil( cmd:pid() );
 ifNotEqual( type( pid ), 'number' );
 
 -- send msg: should append LF
-ifNotTrue( cmd:stdin( cjson.encode( argv ) .. '\n' ) );
+msg = cjson.encode( argv ) .. '\n';
+ifNotEqual( cmd:stdin( msg ), #msg );
 
 -- read json from stdout
 msg = cjson.decode( cmd:stdout() );
@@ -42,7 +43,7 @@ local function close( sec )
         if sec then
             sleep(sec);
         end
-        cmd:close();
+        cmd:kill();
         os.exit();
     end
 end
