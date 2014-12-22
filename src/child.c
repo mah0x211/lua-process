@@ -104,17 +104,18 @@ static int stdout_lua( lua_State *L )
 }
 
 
-static int close_lua( lua_State *L )
+static int kill_lua( lua_State *L )
 {
     pchild_t *chd = luaL_checkudata( L, 1, PROCESS_CHILD_MT );
     int signo = luaL_optint( L, 2, SIGTERM );
     int rc = kill( chd->pid, signo );
     
-    lua_pushboolean( L, rc == 0 );
-    if( rc != 0 ){
-        lua_pushstring( L, strerror( errno ) );
-        return 2;
+    if( rc == 0 ){
+        return 0;
     }
+    
+    // got error
+    lua_pushstring( L, strerror( errno ) );
     
     return 1;
 }
@@ -163,7 +164,7 @@ LUALIB_API int luaopen_process_child( lua_State *L )
     };
     struct luaL_Reg method[] = {
         { "pid", pid_lua },
-        { "close", close_lua },
+        { "kill", kill_lua },
         { "stdin", stdin_lua },
         { "stdout", stdout_lua },
         { "stderr", stderr_lua },
