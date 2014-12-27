@@ -102,32 +102,33 @@ static inline int gname2gid( gid_t *gid, const char *gname )
 }
 
 
+#define getid_lua(L,t,name2id,getid) do { \
+    size_t len = 0; \
+    const char *name = luaL_optlstring( L, 1, NULL, &len ); \
+    if( len ){ \
+        t id = 0; \
+        /* not found */ \
+        if( name2id( &id, name ) != 0 ){ \
+            lua_pushnil( L ); \
+            lua_pushstring( L, strerror( errno ) ); \
+            return 2; \
+        } \
+        /* push id */ \
+        else { \
+            lua_pushinteger( L, id ); \
+        } \
+    } \
+    /* return id of current process */ \
+    else { \
+        lua_pushinteger( L, getid() ); \
+    } \
+    return 1; \
+}while(0)
+
+
 static int getgid_lua( lua_State *L )
 {
-    size_t len = 0;
-    const char *gname = luaL_optlstring( L, 1, NULL, &len );
-    
-    if( len )
-    {
-        gid_t gid = 0;
-        
-        // not found
-        if( gname2gid( &gid, gname ) != 0 ){
-            lua_pushnil( L );
-            lua_pushstring( L, strerror( errno ) );
-            return 2;
-        }
-        // push gid
-        else {
-            lua_pushinteger( L, gid );
-        }
-    }
-    // return gid of current process
-    else {
-        lua_pushinteger( L, getgid() );
-    }
-    
-    return 1;
+    getid_lua( L, gid_t, gname2gid, getgid );
 }
 
 
@@ -237,8 +238,7 @@ FAILURE:
 // MARK: user id
 static int getuid_lua( lua_State *L )
 {
-    lua_pushinteger( L, getuid() );
-    return 1;
+    getid_lua( L, uid_t, uname2uid, getuid );
 }
 
 
