@@ -178,13 +178,37 @@ static int setegid_lua( lua_State *L )
 
 static int setregid_lua( lua_State *L )
 {
-    gid_t rgid = (gid_t)luaL_checkinteger( L, 1 );
-    gid_t egid = (gid_t)luaL_checkinteger( L, 2 );
+    const char *gname = NULL;
+    gid_t rgid = 0;
+    gid_t egid = 0;
+    
+    if( lua_type( L, 1 ) == LUA_TSTRING )
+    {
+        gname = luaL_checkstring( L, 1 );
+        if( gname2gid( &rgid, gname ) != 0 ){
+            goto FAILURE;
+        }
+    }
+    else {
+        rgid = (gid_t)luaL_checkinteger( L, 1 );
+    }
+    
+    if( lua_type( L, 2 ) == LUA_TSTRING )
+    {
+        gname = luaL_checkstring( L, 2 );
+        if( gname2gid( &egid, gname ) != 0 ){
+            goto FAILURE;
+        }
+    }
+    else {
+        egid = (gid_t)luaL_checkinteger( L, 2 );
+    }
     
     if( setregid( rgid, egid ) == 0 ){
         return 0;
     }
-    
+
+FAILURE:
     // got error
     lua_pushstring( L, strerror( errno ) );
     
