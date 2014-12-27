@@ -147,6 +147,38 @@ static inline int gname2gid( gid_t *gid, const char *gname )
 }while(0)
 
 
+#define setreid_lua(L,t,name2id,setid) do { \
+    const char *name = NULL; \
+    t rid = 0; \
+    t eid = 0; \
+    if( lua_type( L, 1 ) == LUA_TSTRING ){ \
+        name = luaL_checkstring( L, 1 ); \
+        if( name2id( &rid, name ) != 0 ){ \
+            goto FAILURE; \
+        } \
+    } \
+    else { \
+        rid = (t)luaL_checkinteger( L, 1 ); \
+    } \
+    if( lua_type( L, 2 ) == LUA_TSTRING ){ \
+        name = luaL_checkstring( L, 2 ); \
+        if( name2id( &eid, name ) != 0 ){ \
+            goto FAILURE; \
+        } \
+    } \
+    else { \
+        eid = (t)luaL_checkinteger( L, 2 ); \
+    } \
+    if( setid( rid, eid ) == 0 ){ \
+        return 0; \
+    } \
+FAILURE: \
+    /* got error */ \
+    lua_pushstring( L, strerror( errno ) ); \
+    return 1; \
+}while(0);
+
+
 static int getgid_lua( lua_State *L )
 {
     getid_lua( L, gid_t, gname2gid, getgid );
@@ -174,41 +206,7 @@ static int setegid_lua( lua_State *L )
 
 static int setregid_lua( lua_State *L )
 {
-    const char *gname = NULL;
-    gid_t rgid = 0;
-    gid_t egid = 0;
-    
-    if( lua_type( L, 1 ) == LUA_TSTRING )
-    {
-        gname = luaL_checkstring( L, 1 );
-        if( gname2gid( &rgid, gname ) != 0 ){
-            goto FAILURE;
-        }
-    }
-    else {
-        rgid = (gid_t)luaL_checkinteger( L, 1 );
-    }
-    
-    if( lua_type( L, 2 ) == LUA_TSTRING )
-    {
-        gname = luaL_checkstring( L, 2 );
-        if( gname2gid( &egid, gname ) != 0 ){
-            goto FAILURE;
-        }
-    }
-    else {
-        egid = (gid_t)luaL_checkinteger( L, 2 );
-    }
-    
-    if( setregid( rgid, egid ) == 0 ){
-        return 0;
-    }
-
-FAILURE:
-    // got error
-    lua_pushstring( L, strerror( errno ) );
-    
-    return 1;
+    setreid_lua( L, gid_t, gname2gid, setregid );
 }
 
 
@@ -240,17 +238,7 @@ static int seteuid_lua( lua_State *L )
 
 static int setreuid_lua( lua_State *L )
 {
-    uid_t ruid = (uid_t)luaL_checkinteger( L, 1 );
-    gid_t euid = (gid_t)luaL_checkinteger( L, 2 );
-    
-    if( setreuid( ruid, euid ) == 0 ){
-        return 0;
-    }
-    
-    // got error
-    lua_pushstring( L, strerror( errno ) );
-    
-    return 1;
+    setreid_lua( L, uid_t, uname2uid, setreuid );
 }
 
 
