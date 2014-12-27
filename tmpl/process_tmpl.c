@@ -187,7 +187,7 @@ static int setegid_lua( lua_State *L )
 
 static int setregid_lua( lua_State *L )
 {
-    gid_t rgid = (uid_t)luaL_checkinteger( L, 1 );
+    gid_t rgid = (gid_t)luaL_checkinteger( L, 1 );
     gid_t egid = (gid_t)luaL_checkinteger( L, 2 );
     
     if( setregid( rgid, egid ) == 0 ){
