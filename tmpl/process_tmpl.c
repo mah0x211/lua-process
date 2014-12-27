@@ -68,7 +68,34 @@ static int getppid_lua( lua_State *L )
 // MARK: group id
 static int getgid_lua( lua_State *L )
 {
-    lua_pushinteger( L, getgid() );
+    size_t len = 0;
+    const char *gname = luaL_optlstring( L, 1, NULL, &len );
+    
+    if( len )
+    {
+        struct group *grp = NULL;
+        
+        errno = 0;
+        // not found
+        if( !( grp = getgrnam( gname ) ) )
+        {
+            lua_pushnil( L );
+            // got error
+            if( errno ){
+                lua_pushstring( L, strerror( errno ) );
+                return 2;
+            }
+        }
+        // push gid
+        else {
+            lua_pushinteger( L, grp->gr_gid );
+        }
+    }
+    // return gid of current process
+    else {
+        lua_pushinteger( L, getgid() );
+    }
+    
     return 1;
 }
 

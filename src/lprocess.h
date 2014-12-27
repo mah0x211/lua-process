@@ -36,6 +36,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <signal.h>
+#include <grp.h>
 #include <sys/resource.h>
 #include <sys/time.h>
 #include <lua.h>
