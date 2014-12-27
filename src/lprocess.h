@@ -37,6 +37,7 @@
 #include <fcntl.h>
 #include <signal.h>
 #include <grp.h>
+#include <pwd.h>
 #include <sys/resource.h>
 #include <sys/time.h>
 #include <lua.h>
