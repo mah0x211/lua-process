@@ -50,10 +50,16 @@ these constants defined at the `process.*`
 
 ### Getting group id
 
-- `gid:number = getgid()`  
-    get real group id of calling process.
+- `gid:number = getgid( [gname:string] )`  
+    get real group id of a calling process or a specified group-name.
 - `gid:number = getegid()`  
     get effective group id of calling process.
+
+
+**Parameters**
+
+- `gname`: group name.
+
 
 **Returns**
 
@@ -62,16 +68,17 @@ these constants defined at the `process.*`
 
 ### Setting group id
 
-- `err:string = setgid( gid:number )`  
+- `err:string = setgid( gid:number or gname:string )`  
     set real group id.
-- `err:string = setegid( gid:number )`  
+- `err:string = setegid( gid:number or gname:string )`  
     set effective group id.
-- `err:string = setregid( rgid:number, egid:number )`  
+- `err:string = setregid( rgid:number or gname:string, egid:number or gname:string )`  
     set real and effective group id.
 
 **Parameters**
 
 - `gid`: group id.
+- `gname`: group name.
 - `rgid`: real group id.
 - `egid`: effective group id.
 
@@ -84,10 +91,14 @@ these constants defined at the `process.*`
 
 ### Getting user id
 
-- `uid:number = getuid()`
-    get real user id of calling process.
+- `uid:number = getuid( [uname:string] )`
+    get real user id of a calling process or a specified user-name.
 - `uid:number = geteuid()`
     get effective user id of calling process.
+
+**Parameters**
+
+- `uname`: user name.
 
 **Returns**
 
@@ -96,16 +107,17 @@ these constants defined at the `process.*`
 
 ### Setting user id
 
-- `err:string = setuid( uid:number )`  
+- `err:string = setuid( uid:number or uname:string )`  
     set real user id.
-- `err:string = seteuid( uid:number )`  
+- `err:string = seteuid( uid:number or uname:string )`  
     set effective user id.
-- `err:string = setreuid( ruid:number, euid:number )`  
+- `err:string = setreuid( ruid:number or uname:string, euid:number or uname:string )`  
     set real and effective user id.
 
 **Parameters**
 
 - `uid`: user id.
+- `uname`: user name.
 - `ruid`: real user id.
 - `euid`: effective user id.
 
