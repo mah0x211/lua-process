@@ -126,6 +126,27 @@ static inline int gname2gid( gid_t *gid, const char *gname )
 }while(0)
 
 
+#define setid_lua(L,t,name2id,setid) do { \
+    t id = 0; \
+    if( lua_type( L, 1 ) == LUA_TSTRING ){ \
+        const char *name = luaL_checkstring( L, 1 ); \
+        /* set id by name */ \
+        if( name2id( &id, name ) == 0 && setid( id ) == 0 ){ \
+            return 0; \
+        } \
+    } \
+    else { \
+        id = (t)luaL_checkinteger( L, 1 ); \
+        if( setid( id ) == 0 ){ \
+            return 0; \
+        } \
+    } \
+    /* got error */ \
+    lua_pushstring( L, strerror( errno ) ); \
+    return 1; \
+}while(0)
+
+
 static int getgid_lua( lua_State *L )
 {
     getid_lua( L, gid_t, gname2gid, getgid );
@@ -134,29 +155,7 @@ static int getgid_lua( lua_State *L )
 
 static int setgid_lua( lua_State *L )
 {
-    if( lua_type( L, 1 ) == LUA_TSTRING )
-    {
-        const char *gname = luaL_checkstring( L, 1 );
-        gid_t gid = 0;
-        
-        // set gid by group-name
-        if( gname2gid( &gid, gname ) == 0 && setgid( gid ) == 0 ){
-            return 0;
-        }
-    }
-    else
-    {
-        gid_t gid = (gid_t)luaL_checkinteger( L, 1 );
-        
-        if( setgid( gid ) == 0 ){
-            return 0;
-        }
-    }
-    
-    // got error
-    lua_pushstring( L, strerror( errno ) );
-    
-    return 1;
+    setid_lua( L, gid_t, gname2gid, setgid );
 }
 
 
@@ -169,29 +168,7 @@ static int getegid_lua( lua_State *L )
 
 static int setegid_lua( lua_State *L )
 {
-    if( lua_type( L, 1 ) == LUA_TSTRING )
-    {
-        const char *gname = luaL_checkstring( L, 1 );
-        gid_t gid = 0;
-        
-        // set gid by group-name
-        if( gname2gid( &gid, gname ) == 0 && setegid( gid ) == 0 ){
-            return 0;
-        }
-    }
-    else
-    {
-        gid_t gid = (gid_t)luaL_checkinteger( L, 1 );
-        
-        if( setegid( gid ) == 0 ){
-            return 0;
-        }
-    }
-    
-    // got error
-    lua_pushstring( L, strerror( errno ) );
-    
-    return 1;
+    setid_lua( L, gid_t, gname2gid, setegid );
 }
 
 
@@ -244,16 +221,7 @@ static int getuid_lua( lua_State *L )
 
 static int setuid_lua( lua_State *L )
 {
-    uid_t uid = (uid_t)luaL_checkinteger( L, 1 );
-    
-    if( setuid( uid ) == 0 ){
-        return 0;
-    }
-    
-    // got error
-    lua_pushstring( L, strerror( errno ) );
-    
-    return 1;
+    setid_lua( L, uid_t, uname2uid, setuid );
 }
 
 
@@ -266,16 +234,7 @@ static int geteuid_lua( lua_State *L )
 
 static int seteuid_lua( lua_State *L )
 {
-    uid_t uid = (uid_t)luaL_checkinteger( L, 1 );
-    
-    if( seteuid( uid ) == 0 ){
-        return 0;
-    }
-    
-    // got error
-    lua_pushstring( L, strerror( errno ) );
-    
-    return 1;
+    setid_lua( L, uid_t, uname2uid, seteuid );
 }
 
 
