@@ -75,8 +75,11 @@ static inline int gname2gid( gid_t *gid, const char *gname )
         *gid = grp->gr_gid;
         return 0;
     }
-    
     // not found
+    else if( !errno ){
+        errno = EINVAL;
+    }
+    
     return -1;
 }
 
@@ -91,14 +94,10 @@ static int getgid_lua( lua_State *L )
         gid_t gid = 0;
         
         // not found
-        if( gname2gid( &gid, gname ) != 0 )
-        {
+        if( gname2gid( &gid, gname ) != 0 ){
             lua_pushnil( L );
-            // got error
-            if( errno ){
-                lua_pushstring( L, strerror( errno ) );
-                return 2;
-            }
+            lua_pushstring( L, strerror( errno ) );
+            return 2;
         }
         // push gid
         else {
@@ -124,10 +123,6 @@ static int setgid_lua( lua_State *L )
         // set gid by group-name
         if( gname2gid( &gid, gname ) == 0 && setgid( gid ) == 0 ){
             return 0;
-        }
-        // group not found
-        else if( !errno ){
-            errno = EINVAL;
         }
     }
     else
@@ -163,10 +158,6 @@ static int setegid_lua( lua_State *L )
         // set gid by group-name
         if( gname2gid( &gid, gname ) == 0 && setegid( gid ) == 0 ){
             return 0;
-        }
-        // group not found
-        else if( !errno ){
-            errno = EINVAL;
         }
     }
     else
