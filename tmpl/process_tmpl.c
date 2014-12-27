@@ -142,10 +142,28 @@ static int getegid_lua( lua_State *L )
 
 static int setegid_lua( lua_State *L )
 {
-    gid_t gid = (gid_t)luaL_checkinteger( L, 1 );
-    
-    if( setegid( gid ) == 0 ){
-        return 0;
+    if( lua_type( L, 1 ) == LUA_TSTRING )
+    {
+        const char *gname = luaL_checkstring( L, 1 );
+        struct group *grp = NULL;
+        
+        errno = 0;
+        // set gid by group-name
+        if( ( grp = getgrnam( gname ) ) && setegid( grp->gr_gid ) == 0 ){
+            return 0;
+        }
+        // group not found
+        else if( !errno ){
+            errno = EINVAL;
+        }
+    }
+    else
+    {
+        gid_t gid = (gid_t)luaL_checkinteger( L, 1 );
+        
+        if( setegid( gid ) == 0 ){
+            return 0;
+        }
     }
     
     // got error
