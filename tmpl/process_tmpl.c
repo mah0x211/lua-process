@@ -66,6 +66,21 @@ static int getppid_lua( lua_State *L )
 
 
 // MARK: group id
+static inline int gname2gid( gid_t *gid, const char *gname )
+{
+    struct group *grp = NULL;
+    
+    errno = 0;
+    if( ( grp = getgrnam( gname ) ) ){
+        *gid = grp->gr_gid;
+        return 0;
+    }
+    
+    // not found
+    return -1;
+}
+
+
 static int getgid_lua( lua_State *L )
 {
     size_t len = 0;
@@ -73,11 +88,10 @@ static int getgid_lua( lua_State *L )
     
     if( len )
     {
-        struct group *grp = NULL;
+        gid_t gid = 0;
         
-        errno = 0;
         // not found
-        if( !( grp = getgrnam( gname ) ) )
+        if( gname2gid( &gid, gname ) != 0 )
         {
             lua_pushnil( L );
             // got error
@@ -88,7 +102,7 @@ static int getgid_lua( lua_State *L )
         }
         // push gid
         else {
-            lua_pushinteger( L, grp->gr_gid );
+            lua_pushinteger( L, gid );
         }
     }
     // return gid of current process
@@ -105,11 +119,10 @@ static int setgid_lua( lua_State *L )
     if( lua_type( L, 1 ) == LUA_TSTRING )
     {
         const char *gname = luaL_checkstring( L, 1 );
-        struct group *grp = NULL;
+        gid_t gid = 0;
         
-        errno = 0;
         // set gid by group-name
-        if( ( grp = getgrnam( gname ) ) && setgid( grp->gr_gid ) == 0 ){
+        if( gname2gid( &gid, gname ) == 0 && setgid( gid ) == 0 ){
             return 0;
         }
         // group not found
@@ -145,11 +158,10 @@ static int setegid_lua( lua_State *L )
     if( lua_type( L, 1 ) == LUA_TSTRING )
     {
         const char *gname = luaL_checkstring( L, 1 );
-        struct group *grp = NULL;
+        gid_t gid = 0;
         
-        errno = 0;
         // set gid by group-name
-        if( ( grp = getgrnam( gname ) ) && setegid( grp->gr_gid ) == 0 ){
+        if( gname2gid( &gid, gname ) == 0 && setegid( gid ) == 0 ){
             return 0;
         }
         // group not found
