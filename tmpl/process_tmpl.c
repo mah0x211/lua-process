@@ -93,6 +93,12 @@ static inline int gname2gid( gid_t *gid, const char *gname )
 }
 
 
+static inline int gid2gname( const char **gname, gid_t gid )
+{
+    getuinfo( gname, getgrgid, gid, struct group, gr_name );
+}
+
+
 #define getid_lua(L,t,name2id,getid) do { \
     size_t len = 0; \
     const char *name = luaL_optlstring( L, 1, NULL, &len ); \
@@ -113,6 +119,21 @@ static inline int gname2gid( gid_t *gid, const char *gname )
     else { \
         lua_pushinteger( L, getid() ); \
     } \
+    return 1; \
+}while(0)
+
+
+#define getname_lua(L,t,id2name) do { \
+    t id = (t)luaL_checkinteger( L, 1 ); \
+    const char *name = NULL; \
+    /* not found */ \
+    if( id2name( &name, id ) != 0 ){ \
+        lua_pushnil( L ); \
+        lua_pushstring( L, strerror( errno ) ); \
+        return 2; \
+    } \
+    /* push name */ \
+    lua_pushstring( L, name ); \
     return 1; \
 }while(0)
 
@@ -173,6 +194,12 @@ FAILURE: \
 static int getgid_lua( lua_State *L )
 {
     getid_lua( L, gid_t, gname2gid, getgid );
+}
+
+
+static int getgname_lua( lua_State *L )
+{
+    getname_lua( L, gid_t, gid2gname );
 }
 
 
@@ -662,6 +689,7 @@ LUALIB_API int luaopen_process( lua_State *L )
         { "getppid", getppid_lua },
         // group id
         { "getgid", getgid_lua },
+        { "getgname", getgname_lua },
         { "setgid", setgid_lua },
         { "getegid", getegid_lua },
         { "setegid", setegid_lua },
