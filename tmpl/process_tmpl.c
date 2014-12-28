@@ -66,39 +66,30 @@ static int getppid_lua( lua_State *L )
 
 
 // MARK: user/group id
+#define getuinfo(dest,getter,arg,t,field) do{ \
+    t *info = NULL; \
+    errno = 0; \
+    if( ( info = getter( arg ) ) ){ \
+        *dest = info->field; \
+        return 0; \
+    } \
+    /* not found */ \
+    else if( !errno ){ \
+        errno = EINVAL; \
+    } \
+    return -1; \
+}while(0)
+
+
 static inline int uname2uid( uid_t *uid, const char *uname )
 {
-    struct passwd *pwd = NULL;
-    
-    errno = 0;
-    if( ( pwd = getpwnam( uname ) ) ){
-        *uid = pwd->pw_uid;
-        return 0;
-    }
-    // not found
-    else if( !errno ){
-        errno = EINVAL;
-    }
-    
-    return -1;
+    getuinfo( uid, getpwnam, uname, struct passwd, pw_uid );
 }
 
 
 static inline int gname2gid( gid_t *gid, const char *gname )
 {
-    struct group *grp = NULL;
-    
-    errno = 0;
-    if( ( grp = getgrnam( gname ) ) ){
-        *gid = grp->gr_gid;
-        return 0;
-    }
-    // not found
-    else if( !errno ){
-        errno = EINVAL;
-    }
-    
-    return -1;
+    getuinfo( gid, getgrnam, gname, struct group, gr_gid );
 }
 
 
@@ -210,7 +201,6 @@ static int setregid_lua( lua_State *L )
 }
 
 
-// MARK: user id
 static int getuid_lua( lua_State *L )
 {
     getid_lua( L, uid_t, uname2uid, getuid );
