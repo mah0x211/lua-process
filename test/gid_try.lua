@@ -1,24 +1,27 @@
 local getgid = require('process').getgid;
+local getgname = require('process').getgname;
 local setgid = require('process').setgid;
 local setegid = require('process').setegid;
 local setregid = require('process').setregid;
-local gid;
+local gid, gname;
 
-ifNil( getgid() );
-gid = ifNil( getgid('staff') );
+gid = ifNil( getgid() );
+gname = ifNil( getgname( gid ) );
+ifNotEqual( gid, getgid( gname ) );
+
 ifNotNil( getgid('invalid gid') );
 
 ifNotNil( setgid( gid ) );
 ifNotNil( setegid( gid ) );
 
-ifNotNil( setgid('staff') );
+ifNotNil( setgid( gname ) );
 ifNil( setgid('invalid gid') );
 
-ifNotNil( setegid('staff') );
+ifNotNil( setegid( gname ) );
 ifNil( setegid('invalid gid') );
 
 ifNotNil( setregid( gid, gid ) );
-ifNotNil( setregid( 'staff', 'staff' ) );
+ifNotNil( setregid( gname, gname ) );
 ifNil( setregid( 'invalid gid', 'invalid gid' ) );
 
 ifNotEqual( gid, getgid() );
