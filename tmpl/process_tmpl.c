@@ -87,6 +87,12 @@ static inline int uname2uid( uid_t *uid, const char *uname )
 }
 
 
+static inline int uid2uname( const char **uname, uid_t uid )
+{
+    getuinfo( uname, getpwuid, uid, struct passwd, pw_name );
+}
+
+
 static inline int gname2gid( gid_t *gid, const char *gname )
 {
     getuinfo( gid, getgrnam, gname, struct group, gr_gid );
@@ -231,6 +237,12 @@ static int setregid_lua( lua_State *L )
 static int getuid_lua( lua_State *L )
 {
     getid_lua( L, uid_t, uname2uid, getuid );
+}
+
+
+static int getuname_lua( lua_State *L )
+{
+    getname_lua( L, uid_t, uid2uname );
 }
 
 
@@ -696,6 +708,7 @@ LUALIB_API int luaopen_process( lua_State *L )
         { "setregid", setregid_lua },
         // user id
         { "getuid", getuid_lua },
+        { "getuname", getuname_lua },
         { "setuid", setuid_lua },
         { "geteuid", geteuid_lua },
         { "seteuid", seteuid_lua },
