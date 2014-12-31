@@ -7,6 +7,7 @@ local uid, uname;
 
 uid = ifNil( getuid() );
 uname = ifNil( getuname( uid ) );
+ifNotEqual( uname, getuname() );
 ifNotEqual( uid, getuid( uname ) );
 ifNotNil( getuid('invalid uid') );
 
