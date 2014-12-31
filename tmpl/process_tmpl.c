@@ -129,8 +129,8 @@ static inline int gid2gname( const char **gname, gid_t gid )
 }while(0)
 
 
-#define getname_lua(L,t,id2name) do { \
-    t id = (t)luaL_checkinteger( L, 1 ); \
+#define getname_lua(L,t,id2name,getid) do { \
+    t id = (t)(lua_isnoneornil( L, 1 ) ? getid() : luaL_checkinteger( L, 1 )); \
     const char *name = NULL; \
     /* not found */ \
     if( id2name( &name, id ) != 0 ){ \
@@ -205,7 +205,7 @@ static int getgid_lua( lua_State *L )
 
 static int getgname_lua( lua_State *L )
 {
-    getname_lua( L, gid_t, gid2gname );
+    getname_lua( L, gid_t, gid2gname, getgid );
 }
 
 
@@ -242,7 +242,7 @@ static int getuid_lua( lua_State *L )
 
 static int getuname_lua( lua_State *L )
 {
-    getname_lua( L, uid_t, uid2uname );
+    getname_lua( L, uid_t, uid2uname, getuid );
 }
 
 
