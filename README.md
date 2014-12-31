@@ -55,15 +55,27 @@ these constants defined at the `process.*`
 - `gid:number = getegid()`  
     get effective group id of calling process.
 
-
 **Parameters**
 
 - `gname`: group name.
 
-
 **Returns**
 
 1. `gid`: group id.
+
+
+### Getting group name
+
+- `gname:string = getgname( [gid:number] )`  
+    get group name of a calling process or specified group id.
+
+**Parameters**
+
+- `gid`: group id.
+
+**Returns**
+
+- `gname`: group name.
 
 
 ### Setting group id
@@ -96,6 +108,7 @@ these constants defined at the `process.*`
 - `uid:number = geteuid()`
     get effective user id of calling process.
 
+
 **Parameters**
 
 - `uname`: user name.
@@ -103,6 +116,20 @@ these constants defined at the `process.*`
 **Returns**
 
 1. `uid`: user id.
+
+
+### Getting user name
+
+- `uname:string = getuname( [uid:number] )`  
+    get user name of calling process or a specified user id.
+
+**Parameters**
+
+- `uid`: user id.
+
+**Returns**
+
+- `uname`: user name.
 
 
 ### Setting user id
