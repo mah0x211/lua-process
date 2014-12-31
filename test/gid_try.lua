@@ -7,6 +7,7 @@ local gid, gname;
 
 gid = ifNil( getgid() );
 gname = ifNil( getgname( gid ) );
+ifNotEqual( gname, getgname() );
 ifNotEqual( gid, getgid( gname ) );
 
 ifNotNil( getgid('invalid gid') );
