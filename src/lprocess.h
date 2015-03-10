@@ -38,8 +38,16 @@
 #include <signal.h>
 #include <grp.h>
 #include <pwd.h>
+#include <time.h>
 #include <sys/resource.h>
 #include <sys/time.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+#if defined(__linux__)
+#include <linux/limits.h>
+#endif
+
 #include <lua.h>
 #include <lualib.h>
 #include <lauxlib.h>
