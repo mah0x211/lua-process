@@ -10,7 +10,8 @@ description = {
     maintainer = "Masatoshi Teruya"
 }
 dependencies = {
-    "lua >= 5.1"
+    "lua >= 5.1",
+    "util >= 1.4.1"
 }
 build = {
     type = "make",
