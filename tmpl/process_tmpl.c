@@ -416,7 +416,7 @@ static int waitpid_lua( lua_State *L )
         int i = 2;
         
         for(; i <= argc; i++ ){
-            opts |= luaL_optint( L, i, 0 );
+            opts |= (int)luaL_optinteger( L, i, 0 );
         }
     }
     
@@ -670,7 +670,7 @@ static int strerror_lua( lua_State *L )
     int err = errno;
     
     if( !lua_isnoneornil( L, 1 ) ){
-        err = luaL_checkint( L, 1 );
+        err = (int)luaL_checkinteger( L, 1 );
     }
     
     lua_pushstring( L, strerror( err ) );

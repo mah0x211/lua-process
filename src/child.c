@@ -107,7 +107,7 @@ static int stdout_lua( lua_State *L )
 static int kill_lua( lua_State *L )
 {
     pchild_t *chd = luaL_checkudata( L, 1, PROCESS_CHILD_MT );
-    int signo = luaL_optint( L, 2, SIGTERM );
+    int signo = (int)luaL_optinteger( L, 2, SIGTERM );
     int rc = kill( chd->pid, signo );
     
     if( rc == 0 ){
