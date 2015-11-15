@@ -335,6 +335,19 @@ please refer to `man 2 execve` for more details.
 2. `err`: nil on success, or error string on failure.
 
 
+## Descriptors
+
+- `newfd:int, err:string = dup( oldfd:int )`
+- `newfd:int, err:string = dup2( oldfd:int, newfd:int )`
+
+duplicate an existing file descriptor.
+
+**Returns**
+
+1. `newfd`: new file descriptor on success, or nil on failure.
+2. `err`: nil on success, or error string on failure.
+
+
 ## Instance of `process.child` module
 
 `process.exec` API return this instance on success.
@@ -399,3 +412,4 @@ print( cmd:stdout() ); -- 'hello world\n'
 **Returns**
 
 1. `err`: nil on success, or error string on failure.
+
