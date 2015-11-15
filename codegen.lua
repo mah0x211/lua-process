@@ -1,5 +1,3 @@
-local inspect = require('util').inspect;
-
 local TMPL = [=[
 #ifdef %s
     lstate_num2tbl( L, "%s", %s );
