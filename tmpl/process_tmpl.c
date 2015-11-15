@@ -719,6 +719,25 @@ static int dup_lua( lua_State *L )
 }
 
 
+static int dup2_lua( lua_State *L )
+{
+    lua_Integer oldfd = luaL_checkinteger( L, 1 );
+    lua_Integer newfd = luaL_checkinteger( L, 2 );
+
+    if( dup2( oldfd, newfd ) != -1 ){
+        lua_pushinteger( L, newfd );
+        return 1;
+    }
+
+    // got error
+    lua_pushnil( L );
+    lua_pushstring( L, strerror( errno ) );
+
+    return 2;
+}
+
+
+
 LUALIB_API int luaopen_process( lua_State *L )
 {
     struct luaL_Reg method[] = {
@@ -763,6 +782,7 @@ LUALIB_API int luaopen_process( lua_State *L )
         { "gettimeofday", gettimeofday_lua },
         // descriptor
         { "dup", dup_lua },
+        { "dup2", dup2_lua },
         { NULL, NULL }
     };
     struct luaL_Reg *ptr = method;
