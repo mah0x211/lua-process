@@ -173,7 +173,7 @@ these constants defined at the `process.*`
 
 ### Create new session id
 
-- `sid:number, err:string = sesid()`  
+- `sid:number, err:string = setsid()`  
     creates a new session.
 
 **Returns**
