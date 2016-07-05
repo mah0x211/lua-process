@@ -737,6 +737,22 @@ static int dup2_lua( lua_State *L )
 }
 
 
+static int close_lua( lua_State *L )
+{
+    lua_Integer fd = luaL_checkinteger( L, 1 );
+
+    if( close( fd ) == 0 ){
+        lua_pushboolean( L, 1 );
+        return 1;
+    }
+
+    // got error
+    lua_pushboolean( L, 0 );
+    lua_pushstring( L, strerror( errno ) );
+
+    return 2;
+}
+
 
 LUALIB_API int luaopen_process( lua_State *L )
 {
@@ -783,6 +799,7 @@ LUALIB_API int luaopen_process( lua_State *L )
         // descriptor
         { "dup", dup_lua },
         { "dup2", dup2_lua },
+        { "close", close_lua },
         { NULL, NULL }
     };
     struct luaL_Reg *ptr = method;
