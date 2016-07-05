@@ -348,6 +348,16 @@ duplicate an existing file descriptor.
 2. `err`: nil on success, or error string on failure.
 
 
+- `ok, err:string = close( fd:int )`
+
+close a existing file descriptor.
+
+**Returns**
+
+1. `ok`: true on success, or false on failure.
+2. `err`: error string on failure.
+
+
 ## Instance of `process.child` module
 
 `process.exec` API return this instance on success.
@@ -360,6 +370,8 @@ local cmd = exec( 'echo', { 'hello world' } );
 -- read from stdout
 print( cmd:stdout() ); -- 'hello world\n'
 ```
+
+
 ### Getting process id
 
 - `pid:number = child:pid()`  
@@ -382,6 +394,7 @@ print( cmd:stdout() ); -- 'hello world\n'
 1. `data`: data as string.
 2. `err`: nil on success, or error string on failure.
 3. `again`: true if got a EAGAIN or EWOULDBLOCK.
+
 
 ### Write the data to stdin
 
