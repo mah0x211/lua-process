@@ -1,11 +1,11 @@
 /*
  *  Copyright (C) 2014 Masatoshi Teruya
  *
- *  Permission is hereby granted, free of charge, to any person obtaining a 
- *  copy of this software and associated documentation files (the "Software"), 
- *  to deal in the Software without restriction, including without limitation 
- *  the rights to use, copy, modify, merge, publish, distribute, sublicense, 
- *  and/or sell copies of the Software, and to permit persons to whom the 
+ *  Permission is hereby granted, free of charge, to any person obtaining a
+ *  copy of this software and associated documentation files (the "Software"),
+ *  to deal in the Software without restriction, including without limitation
+ *  the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ *  and/or sell copies of the Software, and to permit persons to whom the
  *  Software is furnished to do so, subject to the following conditions:
  *
  *  The above copyright notice and this permission notice shall be included in
@@ -13,10 +13,10 @@
  *
  *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL 
+ *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
  *  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
- *  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+ *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ *  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  *  DEALINGS IN THE SOFTWARE.
  *
  *  tmpl/process_tmpl.c
@@ -35,7 +35,7 @@ static int getenv_lua( lua_State *L )
 {
     char **ptr = environ;
     char *val = NULL;
-    
+
     lua_newtable( L );
     while( *ptr )
     {
@@ -46,7 +46,7 @@ static int getenv_lua( lua_State *L )
         }
         ptr++;
     }
-    
+
     return 1;
 }
 
@@ -276,16 +276,16 @@ static int getsid_lua( lua_State *L )
 {
     pid_t pid = (pid_t)luaL_checkinteger( L, 1 );
     pid_t sid = getsid( pid );
-    
+
     if( sid != -1 ){
         lua_pushinteger( L, sid );
         return 1;
     }
-    
+
     // got error
     lua_pushnil( L );
     lua_pushstring( L, strerror( errno ) );
-    
+
     return 2;
 }
 
@@ -293,16 +293,16 @@ static int getsid_lua( lua_State *L )
 static int setsid_lua( lua_State *L )
 {
     pid_t sid = setsid();
-    
+
     if( sid != -1 ){
         lua_pushinteger( L, sid );
         return 1;
     }
-    
+
     // got error
     lua_pushnil( L );
     lua_pushstring( L, strerror( errno ) );
-    
+
     return 2;
 }
 
@@ -311,7 +311,7 @@ static int setsid_lua( lua_State *L )
 static int getrusage_lua( lua_State *L )
 {
     struct rusage usage;
-    
+
     if( getrusage( RUSAGE_SELF, &usage ) == 0 ){
         lua_newtable( L );
         lstate_num2tbl( L, "maxrss", usage.ru_maxrss );
@@ -338,14 +338,14 @@ static int getrusage_lua( lua_State *L )
         lstate_num2tbl( L, "sec", usage.ru_stime.tv_sec );
         lstate_num2tbl( L, "usec", usage.ru_stime.tv_usec );
         lua_rawset( L, -3 );
-        
+
         return 1;
     }
-    
+
     // got error
     lua_pushnil( L );
     lua_pushstring( L, strerror( errno ) );
-    
+
     return 2;
 }
 
@@ -354,17 +354,17 @@ static int getrusage_lua( lua_State *L )
 static int getcwd_lua( lua_State *L )
 {
     char *cwd = getcwd( NULL, 0 );
-    
+
     if( cwd ){
         lua_pushstring( L, cwd );
         free( cwd );
         return 1;
     }
-    
+
     // got error
     lua_pushnil( L );
     lua_pushstring( L, strerror( errno ) );
-    
+
     return 2;
 }
 
@@ -372,14 +372,14 @@ static int getcwd_lua( lua_State *L )
 static int chdir_lua( lua_State *L )
 {
     const char *dir = luaL_checkstring( L, 1 );
-    
+
     if( chdir( dir ) == 0 ){
         return 0;
     }
-    
+
     // got error
     lua_pushstring( L, strerror( errno ) );
-    
+
     return 1;
 }
 
@@ -388,16 +388,16 @@ static int chdir_lua( lua_State *L )
 static int fork_lua( lua_State *L )
 {
     pid_t pid = fork();
-    
+
     if( pid != -1 ){
         lua_pushinteger( L, pid );
         return 1;
     }
-    
+
     // got error
     lua_pushnil( L );
     lua_pushstring( L, strerror( errno ) );
-    
+
     return 2;
 }
 
@@ -409,17 +409,17 @@ static int waitpid_lua( lua_State *L )
     pid_t rpid = 0;
     int rc = 0;
     int opts = 0;
-    
+
     // check opts
     if( argc > 1 )
     {
         int i = 2;
-        
+
         for(; i <= argc; i++ ){
             opts |= (int)luaL_optinteger( L, i, 0 );
         }
     }
-    
+
     rpid = waitpid( pid, &rc, opts );
     // WNOHANG
     if( rpid == 0 ){
@@ -440,7 +440,7 @@ static int waitpid_lua( lua_State *L )
         else if( WIFSIGNALED( rc ) ){
             lstate_num2tbl( L, "termsig", WTERMSIG( rc ) );
         }
-        // stop signal 
+        // stop signal
         else if( WIFSTOPPED( rc ) ){
             lstate_num2tbl( L, "stopsig", WSTOPSIG( rc ) );
         }
@@ -450,11 +450,11 @@ static int waitpid_lua( lua_State *L )
         }
         return 1;
     }
-    
+
     // got error
     lua_pushnil( L );
     lua_pushstring( L, strerror( errno ) );
-    
+
     return 2;
 }
 
@@ -476,11 +476,11 @@ static int exec_lua( lua_State *L )
         .max = 0
     };
     iopipe_t iop;
-    
+
     // init arg containers
     if( arr_init( &argv, ARG_MAX ) == -1 ||
-        arr_push( &argv, (char*)cmd ) == -1 || 
-        arr_init( &envs, 0 ) == -1 || 
+        arr_push( &argv, (char*)cmd ) == -1 ||
+        arr_init( &envs, 0 ) == -1 ||
         iop_init( &iop ) == -1 ){
         arr_dispose( &argv );
         arr_dispose( &envs );
@@ -492,7 +492,7 @@ static int exec_lua( lua_State *L )
     else if( argc > 4 ){
         argc = 4;
     }
-    
+
     // check args
     switch( argc )
     {
@@ -501,7 +501,7 @@ static int exec_lua( lua_State *L )
             if( !lua_isnoneornil( L, 4 ) )
             {
                 const char *dir = luaL_checkstring( L, 4 );
-                
+
                 if( chdir( dir ) != 0 ){
                     arr_dispose( &argv );
                     arr_dispose( &envs );
@@ -579,7 +579,7 @@ static int exec_lua( lua_State *L )
                 return 2;
             }
     }
-    
+
     pid = fork();
     // child
     if( pid == 0 )
@@ -597,7 +597,7 @@ static int exec_lua( lua_State *L )
         fputs( strerror( errno ), stderr );
         _exit(0);
     }
-    
+
     arr_dispose( &argv );
     arr_dispose( &envs );
     // got error
@@ -606,15 +606,15 @@ static int exec_lua( lua_State *L )
         lua_pushstring( L, strerror( errno ) );
         return 2;
     }
-    
+
     // parent
     // close read-stdin, write-stdout
     iop_unset( &iop );
-    if( newpchild( L, pid, iop.fds[IOP_IN_WRITE], iop.fds[IOP_OUT_READ], 
+    if( newpchild( L, pid, iop.fds[IOP_IN_WRITE], iop.fds[IOP_OUT_READ],
                    iop.fds[IOP_ERR_READ] ) != 0 )
     {
         int err = errno;
-        
+
         // kill process safety
         if( kill( pid, SIGTERM ) == 0 )
         {
@@ -628,7 +628,7 @@ static int exec_lua( lua_State *L )
         lua_pushstring( L, strerror( err ) );
         return 2;
     }
-    
+
     return 1;
 }
 
@@ -637,7 +637,7 @@ static int exec_lua( lua_State *L )
 static int sleep_lua( lua_State *L )
 {
     lua_Integer sec = luaL_checkinteger( L, 1 );
-    
+
     lua_pushinteger( L, sleep( sec ) );
     return 1;
 }
@@ -650,9 +650,9 @@ static int nsleep_lua( lua_State *L )
         .tv_sec = nsec / UINT64_C(1000000000),
         .tv_nsec = nsec % UINT64_C(1000000000)
     };
-    
+
     lua_pushinteger( L, nanosleep( &req, NULL ) );
-    
+
     return 1;
 }
 
@@ -668,13 +668,13 @@ static int errno_lua( lua_State *L )
 static int strerror_lua( lua_State *L )
 {
     int err = errno;
-    
+
     if( !lua_isnoneornil( L, 1 ) ){
         err = (int)luaL_checkinteger( L, 1 );
     }
-    
+
     lua_pushstring( L, strerror( err ) );
-    
+
     return 1;
 }
 
@@ -684,7 +684,7 @@ static int strerror_lua( lua_State *L )
 static int gettimeofday_lua( lua_State *L )
 {
     struct timeval tv;
-    
+
     if( gettimeofday( &tv, NULL ) == 0 ){
         lua_pushnumber( L, (lua_Number)tv.tv_sec +
                          (lua_Number)tv.tv_usec/1000000 );
@@ -803,7 +803,7 @@ LUALIB_API int luaopen_process( lua_State *L )
         { NULL, NULL }
     };
     struct luaL_Reg *ptr = method;
-    
+
     // define fd metatable
     luaopen_process_child( L );
     // create module table
@@ -813,7 +813,7 @@ LUALIB_API int luaopen_process( lua_State *L )
         lstate_fn2tbl( L, ptr->name, ptr->func );
         ptr++;
     } while( ptr->name );
-    
+
     // set waitpid options
 #define GEN_WAITPID_OPT_DECL
     // set errno
