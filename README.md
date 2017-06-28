@@ -225,7 +225,7 @@ these constants defined at the `process.*`
 
 ### Create child process
 
-- `pid:number, err:string =  fork()`  
+- `pid:number, err:string, again:boolean =  fork()`  
     create child process.
 
 **Returns**
@@ -233,6 +233,8 @@ these constants defined at the `process.*`
 1. `pid`: 0 to the child process, and a child process id to the
    calling process on success, or nil on failure.
 2. `err`: nil on success, or error string on failure.
+3. `again`: true if got EAGAIN.
+
 
 
 ### Wait for process termination
