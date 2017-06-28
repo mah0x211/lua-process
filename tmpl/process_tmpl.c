@@ -397,8 +397,9 @@ static int fork_lua( lua_State *L )
     // got error
     lua_pushnil( L );
     lua_pushstring( L, strerror( errno ) );
+    lua_pushboolean( L, errno == EAGAIN );
 
-    return 2;
+    return 3;
 }
 
 
