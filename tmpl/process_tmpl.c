@@ -406,7 +406,7 @@ static int fork_lua( lua_State *L )
 static int waitpid_lua( lua_State *L )
 {
     const int argc = lua_gettop( L );
-    pid_t pid = luaL_checkinteger( L, 1 );
+    pid_t pid = luaL_optinteger( L, 1, -1 );
     pid_t rpid = 0;
     int rc = 0;
     int opts = 0;
@@ -424,9 +424,7 @@ static int waitpid_lua( lua_State *L )
     rpid = waitpid( pid, &rc, opts );
     // WNOHANG
     if( rpid == 0 ){
-        lua_createtable( L, 0, 2 );
-        lstate_num2tbl( L, "pid", pid );
-        lstate_bool2tbl( L, "nohang", 1 );
+        lua_pushnil( L );
         return 1;
     }
     else if( rpid != -1 )
