@@ -8,24 +8,24 @@ local status, pid;
 local function wait( ... )
     local pid = ifNil( fork() );
     local status;
-    
+
     if pid == 0 then
         sleep(1);
         os.exit();
     else
-        return pid, ifNil( waitpid( pid, ... ) );
+        return pid, waitpid( pid, ... );
     end
 end
 
 
 local function sendSignal( pid, signo, sec )
     local chd = ifNil( fork() );
-    
+
     if chd == 0 then
         if sec then
             sleep(sec);
         end
-        kill( pid, signo );
+        kill( signo, pid );
         os.exit();
     end
 end
@@ -34,7 +34,7 @@ end
 local function waitSigStop()
     local pid = ifNil( fork() );
     local status;
-    
+
     if pid == 0 then
         sleep(2);
         os.exit();
@@ -48,7 +48,7 @@ end
 local function waitSigContinued()
     local pid = ifNil( fork() );
     local status;
-    
+
     if pid == 0 then
         sleep(2);
         os.exit();
@@ -63,7 +63,7 @@ end
 local function waitSigTerm()
     local pid = ifNil( fork() );
     local status;
-    
+
     if pid == 0 then
         sleep(2);
         os.exit();
@@ -81,8 +81,7 @@ ifNotEqual( type( status.exit ), 'number' );
 
 -- wait nohang
 pid, status = wait( process.WNOHANG );
-ifNotEqual( status.pid, pid );
-ifNotTrue( status.nohang );
+ifNotNil( status );
 
 -- wait stop
 pid, status = waitSigStop();
