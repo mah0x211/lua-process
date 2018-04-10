@@ -246,21 +246,21 @@ please refer to `man 2 waitpid` for more details.
 
 **Parameters**
 
-- `pid`: process id.
-- `...`: to use the following options;  
- - `WNOHANG`
- - `WUNTRACED`
- - `WCONTINUED`
- - `WNOWAIT`
+- `pid`: process id (default: `-1`).
+- `...`: to use the following options;
+    - `WNOHANG`
+    - `WUNTRACED`
+    - `WCONTINUED`
+    - `WNOWAIT`
 
 **Returns**
 
-1. `status`: wait status table.  
- - `nohang` = `true` if `waitpid` syscall returned 0.
- - `exit` = `exit_status:number` if `WIFEXITED` is true.
- - `termsig` = `signo:number` if `WIFSIGNALED` is true.
- - `stopsig` = `signo:number` if `WIFSIGNALED` is true.
- - `continue` = `true` if `WIFCONTINUED` is true
+1. `status`: status table if succeeded.
+    - `pid` = `pid:number`.
+    - `exit` = `exit_status:number` if `WIFEXITED` is true.
+    - `termsig` = `signo:number` if `WIFSIGNALED` is true.
+    - `stopsig` = `signo:number` if `WIFSIGNALED` is true.
+    - `continue` = `true` if `WIFCONTINUED` is true
 2. `err`: nil on success, or error string on failure.
 
 
