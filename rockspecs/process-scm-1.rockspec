@@ -1,7 +1,7 @@
 package = "process"
 version = "scm-1"
 source = {
-    url = "git://github.com/mah0x211/lua-process.git"
+    url = "gitrec://github.com/mah0x211/lua-process.git"
 }
 description = {
     summary = "process module",
@@ -10,7 +10,8 @@ description = {
     maintainer = "Masatoshi Teruya"
 }
 dependencies = {
-    "lua >= 5.1"
+    "lua >= 5.1",
+    "luarocks-fetch-gitrec >= 0.2"
 }
 build = {
     type = "make",
