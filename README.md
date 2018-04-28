@@ -14,240 +14,289 @@ these constants defined at the `process.*`
 
 **Use for `waitpid` API**
 
- - `WNOHANG`
- - `WUNTRACED`
- - `WCONTINUED`
- - `WNOWAIT`
+- `WNOHANG`
+- `WUNTRACED`
+- `WCONTINUED`
+- `WNOWAIT`
 
 
 ## Environment
 
-### Getting environment
+### env = getenv()
 
-- `env:table = getenv()`  
-    get environment values.
+get environment variables.
 
 **Returns**
 
-1. `env`: env table.
+- `env:table`: environment variables.
 
 
 ## Process ID
 
-### Getting process id
+### pid = getpid()
 
-- `pid:number = getpid()`  
-    get calling process id.
-- `pid:number = getppid()`  
-    get parent process id.
+get calling process id.
 
 **Returns**
 
-1. `pid`: process id.
+- `pid:number`: process id.
+
+
+### pid = getppid()
+
+get parent process id.
+
+**Returns**
+
+- `pid:number`: parent process id.
 
 
 ## Group ID
 
-### Getting group id
+### gid = getgid( [gname] )
 
-- `gid:number = getgid( [gname:string] )`  
-    get real group id of a calling process or a specified group-name.
-- `gid:number = getegid()`  
-    get effective group id of calling process.
+get real group id of a calling process or a specified group-name.
 
 **Parameters**
 
-- `gname`: group name.
+- `gname:string`: group name.
 
 **Returns**
 
-1. `gid`: group id.
+- `gid:number`: group id.
 
 
-### Getting group name
+### gid = getegid()
 
-- `gname:string = getgname( [gid:number] )`  
-    get group name of a calling process or specified group id.
+get effective group id of calling process.
+
+
+**Returns**
+
+- `gid:number`: group id.
+
+
+### gname = getgname( [gid] )
+
+get group name of a calling process or specified group id.
 
 **Parameters**
 
-- `gid`: group id.
+- `gid:number`: group id.
 
 **Returns**
 
-- `gname`: group name.
+- `gname:string`: group name.
 
 
-### Setting group id
+### err = setgid( gid or gname )
 
-- `err:string = setgid( gid:number or gname:string )`  
-    set real group id.
-- `err:string = setegid( gid:number or gname:string )`  
-    set effective group id.
-- `err:string = setregid( rgid:number or gname:string, egid:number or gname:string )`  
-    set real and effective group id.
+set real group id.
 
 **Parameters**
 
-- `gid`: group id.
-- `gname`: group name.
-- `rgid`: real group id.
-- `egid`: effective group id.
+- `gid:number`: group id.
+- `gname:string`: group name.
 
 **Returns**
 
-1. `err`: nil on succes, or error string on failure.
+- `err:string`: nil on succes, or error string on failure.
+
+
+### err = setegid( gid or gname )
+
+set effective group id.
+
+**Parameters**
+
+- `gid:number`: group id.
+- `gname:string`: group name.
+
+**Returns**
+
+- `err:string`: nil on succes, or error string on failure.
+
+
+### err = setregid( rgid or gname, egid or gname )
+
+set real and effective group id.
+
+**Parameters**
+
+- `rgid:number`: real group id.
+- `egid:number`: effective group id.
+- `gname:string`: group name.
+
+**Returns**
+
+- `err:string`: nil on succes, or error string on failure.
 
 
 ## User ID
 
-### Getting user id
+### uid = getuid( [uname] )
 
-- `uid:number = getuid( [uname:string] )`
-    get real user id of a calling process or a specified user-name.
-- `uid:number = geteuid()`
-    get effective user id of calling process.
-
+get real user id of a calling process or a specified user-name.
 
 **Parameters**
 
-- `uname`: user name.
+- `uname:string`: user name.
 
 **Returns**
 
-1. `uid`: user id.
+- `uid:number`: user id.
 
 
-### Getting user name
+### uid = geteuid()
 
-- `uname:string = getuname( [uid:number] )`  
-    get user name of calling process or a specified user id.
+get effective user id of calling process.
+
+**Returns**
+
+- `uid:number`: user id.
+
+
+### uname = getuname( [uid] )
+
+get user name of calling process or a specified user id.
 
 **Parameters**
 
-- `uid`: user id.
+- `uid:number`: user id.
 
 **Returns**
 
-- `uname`: user name.
+- `uname:string`: user name.
 
 
-### Setting user id
+### err = setuid( uid or uname )
 
-- `err:string = setuid( uid:number or uname:string )`  
-    set real user id.
-- `err:string = seteuid( uid:number or uname:string )`  
-    set effective user id.
-- `err:string = setreuid( ruid:number or uname:string, euid:number or uname:string )`  
-    set real and effective user id.
+set real user id.
 
 **Parameters**
 
-- `uid`: user id.
-- `uname`: user name.
-- `ruid`: real user id.
-- `euid`: effective user id.
+- `uid:number`: user id.
+- `uname:string`: user name.
 
 **Returns**
 
-1. `err`: nil on succes, or error string on failure.
+- `err:string`: nil on succes, or error string on failure.
 
+
+### err = seteuid( uid or uname )
+
+set effective user id.
+
+**Parameters**
+
+- `uid:number`: user id.
+- `uname:string`: user name.
+
+**Returns**
+
+- `err:string`: nil on succes, or error string on failure.
+
+
+### err = setreuid( ruid or uname, euid or uname )
+
+set real and effective user id.
+
+**Parameters**
+
+- `ruid:number`: real user id.
+- `euid:number`: effective user id.
+- `uname:string`: user name.
+
+**Returns**
+
+- `err:string`: nil on succes, or error string on failure.
 
 
 ## Session ID
 
-### Getting session id
+### sid, err = getsid( pid )
 
-- `sid:number, err:string = getsid( pid:number )`  
-    get session id of the specified process.
+get session id of the specified process.
 
 **Parameters**
 
-- `pid`: process id.
+- `pid:number`: process id.
 
 **Returns**
 
-1. `sid`: session id.
-2. `err`: nil on succes, or error string on failure.
+- `sid:number`: session id.
+- `err:string`: nil on succes, or error string on failure.
 
 
-### Create new session id
+### sid, err = setsid()
 
-- `sid:number, err:string = setsid()`  
-    creates a new session.
+creates a new session.
 
 **Returns**
 
-1. `sid`: session id.
-2. `err`: nil on succes, or error string on failure.
+- `sid:number`: session id.
+- `err:string`: nil on succes, or error string on failure.
 
 
 ## Resource Utilization
 
-### Getting resource info
+### usage, err = getrusage()
 
-- `usage:table, err:string = getrusage()`  
-    get information about resource utilization.
+get information about resource utilization.
 
 **Returns**
 
-1. `usage`: table of `struct rusage`.
-2. `err`: nil on success, or error string on failure.
+- `usage:table`: table of `struct rusage`.
+- `err:string`: nil on success, or error string on failure.
 
 
 ## Current Working Directory
 
-### Getting current working directory
+### path, err = getcwd()
 
-- `path:string, err:string = getcwd()`  
-  get working directory pathname.
+get working directory pathname.
 
 **Returns**
 
-1. `path`: working directory pathname.
-2. `err`:  nil on success, or error string on failure
+- `path:string`: working directory pathname.
+- `err:string`:  nil on success, or error string on failure
 
-### Seting current working directory
 
-- `err:string = chdir( path:string )`  
-    change current working directory.
+### err = chdir( path )
+
+change current working directory.
 
 **Parameters**
 
-- `path`: valid directory path string.
+- `path:string`: valid directory path string.
 
 **Returns**
 
-1. `err`:  nil on success, or error string on failure.
+- `err:string`:  nil on success, or error string on failure.
 
 
 ## Child Process
 
-### Create child process
+### pid, err, again =  fork()
 
-- `pid:number, err:string, again:boolean =  fork()`  
-    create child process.
+create child process.
 
 **Returns**
 
-1. `pid`: 0 to the child process, and a child process id to the
-   calling process on success, or nil on failure.
-2. `err`: nil on success, or error string on failure.
-3. `again`: true if got EAGAIN.
+- `pid:number`: 0 to the child process, and a child process id to the calling process on success, or nil on failure.
+- `err:string`: nil on success, or error string on failure.
+- `again:boolean`: true if got EAGAIN.
 
 
+### status, err = waitpid( pid [, ...] )
 
-### Wait for process termination
-
-- `status:table, err:string = waitpid( pid:number [, ...] )`  
-    wait for process termination.  
-
+wait for process termination.  
 please refer to `man 2 waitpid` for more details.
 
 **Parameters**
 
-- `pid`: process id (default: `-1`).
-- `...`: to use the following options;
+- `pid:number`: process id (default: `-1`).
+- `...`: to use the following options;  
     - `WNOHANG`
     - `WUNTRACED`
     - `WCONTINUED`
@@ -255,109 +304,148 @@ please refer to `man 2 waitpid` for more details.
 
 **Returns**
 
-1. `status`: status table if succeeded.
+- `status:table`: status table if succeeded.
     - `pid` = `pid:number`.
     - `exit` = `exit_status:number` if `WIFEXITED` is true.
     - `termsig` = `signo:number` if `WIFSIGNALED` is true.
     - `stopsig` = `signo:number` if `WIFSIGNALED` is true.
     - `continue` = `true` if `WIFCONTINUED` is true
-2. `err`: nil on success, or error string on failure.
+    - `nochild` = `true` if `errno` is `ECHILD`.
+- `err:string`: nil on success, or error string on failure.
 
 
-### Execute specified file
+### child, err = exec( path [, args [, env [, cwd [, nonblock]]]] )
 
-- `child:process.child, err:string = exec( path:string [, args:table [, env:table [, cwd:string]]] )`  
-    execute a file.
+execute a specified file.
 
 please refer to `man 2 execve` for more details.
 
 **Parameters**
 
-- `path`: filepath.
-- `args`: argument array table.
-- `env`: argument key-value pair table.
-
+- `path:string`: filepath.
+- `args:table`: argument array table.
+- `env:table`: argument key-value pair table.
+- `cwd:string`: custom working directory.
+- `nonblock:boolean`: if set to true, `child:stdin`, `child:stdout` and `child:stderr` are in non-blocking mode.
+ 
 **Returns**
 
-1. `child`: instantance of `process.child` module.
-2. `err`: nil on success, or error string on failure.
+- `child:process.child`: instantance of [`process.child`](#instance-of-processchild-module) module.
+- `err:string`: nil on success, or error string on failure.
 
 
 ## Suspend execution for an interval of time
 
-- `rc:number = sleep( sec:number )`  
-    suspend execution of the calling process until specified seconds.
-- `rc:number = nsleep( nsec:number )`  
-    suspend execution of the calling process until specified nanoseconds.
+### rc = sleep( sec )
 
+suspend execution of the calling process until specified seconds.
 
 **Parameters**
 
-- `sec`: unsigned integer number.
-- `nsec`: unsigned integer.
+- `sec:number`: unsigned integer number.
 
 **Returns**
 
-1. `rc`: 0 on success, and >0 if an error occurs.
+- `rc:number`: 0 on success, and >0 if an error occurs.
+
+
+### rc = nsleep( nsec )
+
+suspend execution of the calling process until specified nanoseconds.
+
+**Parameters**
+
+- `nsec:number`: unsigned integer.
+
+**Returns**
+
+- `rc:number`: 0 on success, and >0 if an error occurs.
 
 
 ## Errors
 
-### Getting current process/thread errno.
+### errno = errno()
 
-- `errno:number = errno()`  
+getting current process/thread errno.
+
 
 **Returns**
 
-1. `errno`: current process/thread errno.
+- `errno:number`: current process/thread errno.
 
 
-### Getting message string corresponding to errno.
+### err = strerror( [errno:number] )
 
-- `err:string = strerror( errno:number )`
+getting message string corresponding to errno.
 
 **Parameters**
 
-- `errno`: error number that defined in errno.h.  
+- `errno:number`: error number that defined in `errno.h`.  
   if passed argument is nil then to use global errno.
 
 **Returns**
 
-1. `err`: error string.
+- `err:string`: error string.
 
 
 ## Date and Time
 
-- `sec:number, err:string = gettimeofday()`  
-    get the time as well as a timezone.
+### sec, err = gettimeofday()
+
+get the time as well as a timezone.
 
 **Returns**
 
-1. `sec`: current time.
-2. `err`: nil on success, or error string on failure.
+- `sec:number`: current time.
+- `err:string`: nil on success, or error string on failure.
 
 
 ## Descriptors
 
-- `newfd:int, err:string = dup( oldfd:int )`
-- `newfd:int, err:string = dup2( oldfd:int, newfd:int )`
+### newfd, err = dup( oldfd )
 
-duplicate an existing file descriptor.
+create a copy of the file descriptor oldfd.  
+please refer to `man 2 dup` for more details.
+
+**Parameters**
+
+- `oldfd:number`: file descriptor.
 
 **Returns**
 
-1. `newfd`: new file descriptor on success, or nil on failure.
-2. `err`: nil on success, or error string on failure.
+- `newfd:number`: new file descriptor.
+- `err:string`: nil on success, or error string on failure.
 
 
-- `ok, err:string = close( fd:int )`
+### newfd, err = dup2( oldfd, newfd )
+
+create a copy of the file descriptor oldfd.  
+please refer to `man 2 dup2` for more details.
+
+**Parameters**
+
+- `oldfd:number`: file descriptor.
+- `newfd:number`: file descriptor.
+
+**Returns**
+
+- `newfd:number`: new file descriptor.
+- `err:string`: nil on success, or error string on failure.
+
+
+### ok, err = close( fd )
 
 close a existing file descriptor.
 
+**Parameters**
+
+- `fd:number`: file descriptor.
+
 **Returns**
 
-1. `ok`: true on success, or false on failure.
-2. `err`: error string on failure.
+- `ok:boolean`: true on success, or false on failure.
+- `err:string`: error string on failure.
+
 
 
 ## Instance of `process.child` module
@@ -374,57 +462,61 @@ print( cmd:stdout() ); -- 'hello world\n'
 ```
 
 
-### Getting process id
+### pid = child:pid()
 
-- `pid:number = child:pid()`  
-    get process id.
-
-**Returns**
-
-1. `pid`: process id.
-
-
-### Reading data from stdout/stderr
-
-- `data:string, err:string, again:boolean = child:stdout()`  
-    read the data from stdout of child process.
-- `data:string, err:string, again:boolean = child:stderr()`  
-    read the data from stderr of child process.
+get process id.
 
 **Returns**
 
-1. `data`: data as string.
-2. `err`: nil on success, or error string on failure.
-3. `again`: true if got a EAGAIN or EWOULDBLOCK.
+- `pid:number`: process id.
 
 
-### Write the data to stdin
+### data, err, again = child:stdout()
 
-- `len:number, err:string, again:boolean = child:stdin( data:string )`  
-    write the data to stdin of child process.
+read the data from stdout of child process.
+
+**Returns**
+
+- `data:string`: data as string.
+- `err:string`: nil on success, or error string on failure.
+- `again:boolean`: true if got a `EAGAIN` or `EWOULDBLOCK`.
+
+
+### data, err, again = child:stderr()
+
+read the data from stderr of child process.
+
+**Returns**
+
+- `data:string`: data as string.
+- `err:string`: nil on success, or error string on failure.
+- `again:boolean`: true if got a `EAGAIN` or `EWOULDBLOCK`.
+
+
+### len, err, again = child:stdin( data )
+
+write the data to stdin of child process.
 
 **Parameters**
 
-- `data`: string.
+- `data:string`: data string.
 
 **Returns**
 
-1. `len`: number of bytes written.
-1. `err`: nil on success, or error string on failure.
-2. `again`: true if got a EAGAIN or EWOULDBLOCK.
+- `len:number`: number of bytes written.
+- `err:string`: nil on success, or error string on failure.
+- `again:boolean`: true if got a `EAGAIN` or `EWOULDBLOCK`.
 
 
-### Send signal to a child process
+### err = child:kill( [signo] )
 
-- `err:string = child:kill( [signo:number] )`  
-    send signal to a child process.
+send signal to a child process.
 
 **Parameters**
 
-- `signo`: signal number. default `SIGTERM`.
-
+- `signo:number`: signal number. default `SIGTERM`.
 
 **Returns**
 
-1. `err`: nil on success, or error string on failure.
+- `err:string`: nil on success, or error string on failure.
 
