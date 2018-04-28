@@ -471,6 +471,7 @@ static int exec_lua( lua_State *L )
 {
     int argc = lua_gettop( L );
     const char *cmd = luaL_checkstring( L, 1 );
+    const char *pwd = NULL;
     pid_t pid = 0;
     array_t argv = {
         .elts = NULL,
@@ -505,18 +506,8 @@ static int exec_lua( lua_State *L )
     {
         // cwd
         case 4:
-            if( !lua_isnoneornil( L, 4 ) )
-            {
-                const char *dir = luaL_checkstring( L, 4 );
-
-                if( chdir( dir ) != 0 ){
-                    arr_dispose( &argv );
-                    arr_dispose( &envs );
-                    iop_dispose( &iop );
-                    lua_pushnil( L );
-                    lua_pushfstring( L, "chdir: %s", strerror( errno ) );
-                    return 2;
-                }
+            if( !lua_isnoneornil( L, 4 ) ){
+                pwd = luaL_checkstring( L, 4 );
             }
         // envs
         case 3:
@@ -593,8 +584,9 @@ static int exec_lua( lua_State *L )
     // child
     if( pid == 0 )
     {
+        // set process-working-directory and
         // set std-in-out-err
-        if( iop_set( &iop ) == 0 )
+        if( ( pwd == NULL || chdir( pwd ) == 0 ) && iop_set( &iop ) == 0 )
         {
             if( envs.len ){
                 environ = envs.elts;
