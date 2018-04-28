@@ -176,7 +176,7 @@ LUALIB_API int luaopen_process_child( lua_State *L )
     luaL_newmetatable( L, PROCESS_CHILD_MT );
     // metamethods
     while( ptr->name ){
-        lstate_fn2tbl( L, ptr->name, ptr->func );
+        lauxh_pushfn2tbl( L, ptr->name, ptr->func );
         ptr++;
     }
     // methods
@@ -184,7 +184,7 @@ LUALIB_API int luaopen_process_child( lua_State *L )
     lua_newtable( L );
     ptr = method;
     while( ptr->name ){
-        lstate_fn2tbl( L, ptr->name, ptr->func );
+        lauxh_pushfn2tbl( L, ptr->name, ptr->func );
         ptr++;
     }
     lua_rawset( L, -3 );

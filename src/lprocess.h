@@ -49,30 +49,7 @@
 #endif
 
 #include <lua.h>
-#include <lualib.h>
-#include <lauxlib.h>
-
-
-// MARK: helper macros
-#define lstate_num2tbl(L,k,v) do{ \
-    lua_pushstring(L,k); \
-    lua_pushnumber(L,v); \
-    lua_rawset(L,-3); \
-}while(0)
-
-
-#define lstate_bool2tbl(L,k,v) do{ \
-    lua_pushstring(L,k); \
-    lua_pushboolean(L,v); \
-    lua_rawset(L,-3); \
-}while(0)
-
-
-#define lstate_fn2tbl(L,k,v) do{ \
-    lua_pushstring(L,k); \
-    lua_pushcfunction(L,v); \
-    lua_rawset(L,-3); \
-}while(0)
+#include "../deps/lauxhlib/lauxhlib.h"
 
 
 // MARK: fd metatable

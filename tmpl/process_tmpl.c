@@ -314,29 +314,29 @@ static int getrusage_lua( lua_State *L )
 
     if( getrusage( RUSAGE_SELF, &usage ) == 0 ){
         lua_newtable( L );
-        lstate_num2tbl( L, "maxrss", usage.ru_maxrss );
-        lstate_num2tbl( L, "ixrss", usage.ru_ixrss );
-        lstate_num2tbl( L, "idrss", usage.ru_idrss );
-        lstate_num2tbl( L, "isrss", usage.ru_isrss );
-        lstate_num2tbl( L, "minflt", usage.ru_minflt );
-        lstate_num2tbl( L, "majflt", usage.ru_majflt );
-        lstate_num2tbl( L, "nswap", usage.ru_nswap );
-        lstate_num2tbl( L, "inblock", usage.ru_inblock );
-        lstate_num2tbl( L, "oublock", usage.ru_oublock );
-        lstate_num2tbl( L, "msgsnd", usage.ru_msgsnd );
-        lstate_num2tbl( L, "msgrcv", usage.ru_msgrcv );
-        lstate_num2tbl( L, "nsignals", usage.ru_nsignals );
-        lstate_num2tbl( L, "nvcsw", usage.ru_nvcsw );
-        lstate_num2tbl( L, "nivcsw", usage.ru_nivcsw );
+        lauxh_pushnum2tbl( L, "maxrss", usage.ru_maxrss );
+        lauxh_pushnum2tbl( L, "ixrss", usage.ru_ixrss );
+        lauxh_pushnum2tbl( L, "idrss", usage.ru_idrss );
+        lauxh_pushnum2tbl( L, "isrss", usage.ru_isrss );
+        lauxh_pushnum2tbl( L, "minflt", usage.ru_minflt );
+        lauxh_pushnum2tbl( L, "majflt", usage.ru_majflt );
+        lauxh_pushnum2tbl( L, "nswap", usage.ru_nswap );
+        lauxh_pushnum2tbl( L, "inblock", usage.ru_inblock );
+        lauxh_pushnum2tbl( L, "oublock", usage.ru_oublock );
+        lauxh_pushnum2tbl( L, "msgsnd", usage.ru_msgsnd );
+        lauxh_pushnum2tbl( L, "msgrcv", usage.ru_msgrcv );
+        lauxh_pushnum2tbl( L, "nsignals", usage.ru_nsignals );
+        lauxh_pushnum2tbl( L, "nvcsw", usage.ru_nvcsw );
+        lauxh_pushnum2tbl( L, "nivcsw", usage.ru_nivcsw );
         lua_pushstring( L, "utime" );
         lua_newtable( L );
-        lstate_num2tbl( L, "sec", usage.ru_utime.tv_sec );
-        lstate_num2tbl( L, "usec", usage.ru_utime.tv_usec );
+        lauxh_pushnum2tbl( L, "sec", usage.ru_utime.tv_sec );
+        lauxh_pushnum2tbl( L, "usec", usage.ru_utime.tv_usec );
         lua_rawset( L, -3 );
         lua_pushstring( L, "stime" );
         lua_newtable( L );
-        lstate_num2tbl( L, "sec", usage.ru_stime.tv_sec );
-        lstate_num2tbl( L, "usec", usage.ru_stime.tv_usec );
+        lauxh_pushnum2tbl( L, "sec", usage.ru_stime.tv_sec );
+        lauxh_pushnum2tbl( L, "usec", usage.ru_stime.tv_usec );
         lua_rawset( L, -3 );
 
         return 1;
@@ -430,22 +430,22 @@ static int waitpid_lua( lua_State *L )
     else if( rpid != -1 )
     {
         lua_createtable( L, 0, 2 );
-        lstate_num2tbl( L, "pid", rpid );
+        lauxh_pushnum2tbl( L, "pid", rpid );
         // exit status
         if( WIFEXITED( rc ) ){
-            lstate_num2tbl( L, "exit", WEXITSTATUS( rc ) );
+            lauxh_pushnum2tbl( L, "exit", WEXITSTATUS( rc ) );
         }
         // exit signal number
         else if( WIFSIGNALED( rc ) ){
-            lstate_num2tbl( L, "termsig", WTERMSIG( rc ) );
+            lauxh_pushnum2tbl( L, "termsig", WTERMSIG( rc ) );
         }
         // stop signal
         else if( WIFSTOPPED( rc ) ){
-            lstate_num2tbl( L, "stopsig", WSTOPSIG( rc ) );
+            lauxh_pushnum2tbl( L, "stopsig", WSTOPSIG( rc ) );
         }
         // continue signal
         else if( WIFCONTINUED( rc ) ){
-            lstate_bool2tbl( L, "continue", 1 );
+            lauxh_pushbool2tbl( L, "continue", 1 );
         }
         return 1;
     }
@@ -809,7 +809,7 @@ LUALIB_API int luaopen_process( lua_State *L )
     lua_newtable( L );
     // add methods
     do {
-        lstate_fn2tbl( L, ptr->name, ptr->func );
+        lauxh_pushfn2tbl( L, ptr->name, ptr->func );
         ptr++;
     } while( ptr->name );
 

@@ -1,6 +1,6 @@
 local TMPL = [=[
 #ifdef %s
-    lstate_num2tbl( L, "%s", %s );
+    lauxh_pushnum2tbl( L, "%s", %s );
 #endif
 
 ]=];
