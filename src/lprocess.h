@@ -92,6 +92,13 @@ typedef struct {
     size_t max;
 } array_t;
 
+#define arr_no_value (array_t){ \
+    .elts = NULL,               \
+    .len = 0,                   \
+    .max = 0                    \
+}
+
+
 static inline int arr_init( array_t *arr, size_t max )
 {
     arr->elts = realloc( NULL, 0 );
@@ -224,6 +231,10 @@ typedef enum {
 typedef struct {
     int fds[6];
 } iopipe_t;
+
+#define iop_no_value (iopipe_t){    \
+    .fds = {}                       \
+}
 
 
 static inline void iop_dispose( iopipe_t *io )

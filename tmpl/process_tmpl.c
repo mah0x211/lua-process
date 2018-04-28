@@ -473,17 +473,9 @@ static int exec_lua( lua_State *L )
     const char *cmd = luaL_checkstring( L, 1 );
     const char *pwd = NULL;
     pid_t pid = 0;
-    array_t argv = {
-        .elts = NULL,
-        .len = 0,
-        .max = 0
-    };
-    array_t envs = {
-        .elts = NULL,
-        .len = 0,
-        .max = 0
-    };
-    iopipe_t iop;
+    array_t argv = arr_no_value;
+    array_t envs = arr_no_value;
+    iopipe_t iop = iop_no_value;
 
     // init arg containers
     if( arr_init( &argv, ARG_MAX ) == -1 ||
