@@ -1,11 +1,11 @@
 /*
  *  Copyright (C) 2014 Masatoshi Teruya
  *
- *  Permission is hereby granted, free of charge, to any person obtaining a 
- *  copy of this software and associated documentation files (the "Software"), 
- *  to deal in the Software without restriction, including without limitation 
- *  the rights to use, copy, modify, merge, publish, distribute, sublicense, 
- *  and/or sell copies of the Software, and to permit persons to whom the 
+ *  Permission is hereby granted, free of charge, to any person obtaining a
+ *  copy of this software and associated documentation files (the "Software"),
+ *  to deal in the Software without restriction, including without limitation
+ *  the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ *  and/or sell copies of the Software, and to permit persons to whom the
  *  Software is furnished to do so, subject to the following conditions:
  *
  *  The above copyright notice and this permission notice shall be included in
@@ -13,10 +13,10 @@
  *
  *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL 
+ *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
  *  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
- *  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+ *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ *  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  *  DEALINGS IN THE SOFTWARE.
  *
  *  src/lprocess.h
@@ -37,7 +37,7 @@ static int stdin_lua( lua_State *L )
     size_t remain = len;
     char *ptr = (char*)str;
     ssize_t bytes = 0;
-    
+
     do
     {
         // got error
@@ -57,9 +57,9 @@ static int stdin_lua( lua_State *L )
             break;
         }
         ptr += bytes;
-    
+
     } while(1);
-    
+
     lua_pushinteger( L, len );
     return 1;
 }
@@ -70,7 +70,7 @@ static inline int read_lua( lua_State *L, int type )
     pchild_t *chd = luaL_checkudata( L, 1, PROCESS_CHILD_MT );
     char buf[LUAL_BUFFERSIZE] = {0};
     ssize_t bytes = read( chd->fds[type], &buf, LUAL_BUFFERSIZE );
-    
+
     if( bytes > 0 ){
         lua_pushlstring( L, buf, bytes );
         return 1;
@@ -80,7 +80,7 @@ static inline int read_lua( lua_State *L, int type )
         lua_pushnil( L );
         return 1;
     }
-    
+
     // got error
     lua_pushnil( L );
     lua_pushstring( L, strerror( errno ) );
@@ -89,7 +89,7 @@ static inline int read_lua( lua_State *L, int type )
         lua_pushboolean( L, 1 );
         return 3;
     }
-    
+
     return 2;
 }
 
@@ -109,14 +109,14 @@ static int kill_lua( lua_State *L )
     pchild_t *chd = luaL_checkudata( L, 1, PROCESS_CHILD_MT );
     int signo = (int)luaL_optinteger( L, 2, SIGTERM );
     int rc = kill( chd->pid, signo );
-    
+
     if( rc == 0 ){
         return 0;
     }
-    
+
     // got error
     lua_pushstring( L, strerror( errno ) );
-    
+
     return 1;
 }
 
@@ -124,9 +124,9 @@ static int kill_lua( lua_State *L )
 static int pid_lua( lua_State *L )
 {
     pchild_t *chd = luaL_checkudata( L, 1, PROCESS_CHILD_MT );
-    
+
     lua_pushinteger( L, chd->pid );
-    
+
     return 1;
 }
 
@@ -135,7 +135,7 @@ static int gc_lua( lua_State *L )
 {
     pchild_t *chd = lua_touserdata( L, 1 );
     int i = 0;
-    
+
     for(; i < 3; i++ )
     {
         if( chd->fds[i] ){
@@ -143,7 +143,7 @@ static int gc_lua( lua_State *L )
             chd->fds[i] = 0;
         }
     }
-    
+
     return 0;
 }
 
@@ -171,7 +171,7 @@ LUALIB_API int luaopen_process_child( lua_State *L )
         { NULL, NULL }
     };
     struct luaL_Reg *ptr = mmethod;
-    
+
     // create metatable
     luaL_newmetatable( L, PROCESS_CHILD_MT );
     // metamethods
@@ -189,7 +189,7 @@ LUALIB_API int luaopen_process_child( lua_State *L )
     }
     lua_rawset( L, -3 );
     lua_pop( L, 1 );
-    
+
     return 0;
 }
 

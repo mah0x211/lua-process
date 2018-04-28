@@ -1,11 +1,11 @@
 /*
  *  Copyright (C) 2014 Masatoshi Teruya
  *
- *  Permission is hereby granted, free of charge, to any person obtaining a 
- *  copy of this software and associated documentation files (the "Software"), 
- *  to deal in the Software without restriction, including without limitation 
- *  the rights to use, copy, modify, merge, publish, distribute, sublicense, 
- *  and/or sell copies of the Software, and to permit persons to whom the 
+ *  Permission is hereby granted, free of charge, to any person obtaining a
+ *  copy of this software and associated documentation files (the "Software"),
+ *  to deal in the Software without restriction, including without limitation
+ *  the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ *  and/or sell copies of the Software, and to permit persons to whom the
  *  Software is furnished to do so, subject to the following conditions:
  *
  *  The above copyright notice and this permission notice shall be included in
@@ -13,10 +13,10 @@
  *
  *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL 
+ *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
  *  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
- *  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+ *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ *  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  *  DEALINGS IN THE SOFTWARE.
  *
  *  src/lprocess.h
@@ -89,11 +89,11 @@ LUALIB_API int luaopen_process_child( lua_State *L );
 
 
 // allocate procfd as userdata
-static inline int newpchild( lua_State *L, pid_t pid, int ifd, int ofd, 
+static inline int newpchild( lua_State *L, pid_t pid, int ifd, int ofd,
                              int efd )
 {
     pchild_t *chd = lua_newuserdata( L, sizeof( pchild_t ) );
-    
+
     if( !chd ){
         return -1;
     }
@@ -103,7 +103,7 @@ static inline int newpchild( lua_State *L, pid_t pid, int ifd, int ofd,
     };
     luaL_getmetatable( L, PROCESS_CHILD_MT );
     lua_setmetatable( L, -2 );
-    
+
     return 0;
 }
 
@@ -123,7 +123,7 @@ static inline int arr_init( array_t *arr, size_t max )
     }
     arr->len = 0;
     arr->max = max;
-    
+
     return -1;
 }
 
@@ -140,7 +140,7 @@ static inline int arr_push( array_t *arr, char *data )
 {
     size_t len = arr->len + 1;
     void *ptr = NULL;
-    
+
     if( arr->max && len > arr->max ){
         errno = E2BIG;
         return -1;
@@ -150,7 +150,7 @@ static inline int arr_push( array_t *arr, char *data )
         arr->elts[arr->len++] = data;
         return 0;
     }
-    
+
     return -1;
 }
 
@@ -159,7 +159,7 @@ static inline int arr_push( array_t *arr, char *data )
 static inline int kvp2arr( lua_State *L, int idx, array_t *arr, const char *fmt )
 {
     char *ptr = NULL;
-    
+
     luaL_checktype( L, idx, LUA_TTABLE );
     lua_pushnil( L );
     while( lua_next( L, idx ) != 0 )
@@ -179,10 +179,10 @@ static inline int kvp2arr( lua_State *L, int idx, array_t *arr, const char *fmt 
                 lua_pop( L, 2 );
                 return EINVAL;
         }
-        
+
         // set item
         // format key-value pair
-        ptr = (char*)lua_pushfstring( 
+        ptr = (char*)lua_pushfstring(
             L, fmt, lua_tostring( L, -2 ), lua_tostring( L, -1 )
         );
         if( !ptr || arr_push( arr, ptr ) == -1 ){
@@ -192,7 +192,7 @@ static inline int kvp2arr( lua_State *L, int idx, array_t *arr, const char *fmt 
         lua_pop( L, 2 );
     }
     lua_pop( L, 1 );
-    
+
     return 0;
 }
 
@@ -227,7 +227,7 @@ static inline int ivp2arr( lua_State *L, int idx, array_t *arr )
         lua_pop( L, 1 );
     }
     lua_pop( L, 1 );
-    
+
     return 0;
 }
 
@@ -251,7 +251,7 @@ typedef struct {
 static inline void iop_dispose( iopipe_t *io )
 {
     int i = 0;
-    
+
     for(; i < 6; i++ )
     {
         if( io->fds[i] ){
