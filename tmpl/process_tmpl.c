@@ -449,6 +449,13 @@ static int waitpid_lua( lua_State *L )
         }
         return 1;
     }
+    // no child processes
+    else if( errno == ECHILD ){
+        lua_createtable( L, 0, 2 );
+        lauxh_pushnum2tbl( L, "pid", pid );
+        lauxh_pushbool2tbl( L, "nochild", 1 );
+        return 1;
+    }
 
     // got error
     lua_pushnil( L );
