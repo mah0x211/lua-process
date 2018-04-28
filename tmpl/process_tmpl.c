@@ -487,13 +487,21 @@ static int exec_lua( lua_State *L )
         goto CLEANUP;
     }
     // manipute arg length
-    else if( argc > 4 ){
-        argc = 4;
+    else if( argc > 5 ){
+        argc = 5;
     }
 
     // check args
     switch( argc )
     {
+        // nonblock
+        case 5:
+            if( lauxh_optboolean( L, 5, 0 ) && iop_setnonblock( &iop ) == -1 ){
+                lua_pushnil( L );
+                lua_pushstring( L, strerror( errno ) );
+                goto CLEANUP;
+            }
+
         // cwd
         case 4:
             pwd = lauxh_optstring( L, 4, NULL );
