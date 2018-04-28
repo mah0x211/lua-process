@@ -65,15 +65,12 @@ typedef struct {
 LUALIB_API int luaopen_process_child( lua_State *L );
 
 
-// allocate procfd as userdata
+// allocate process.child instance
 static inline int newpchild( lua_State *L, pid_t pid, int ifd, int ofd,
                              int efd )
 {
     pchild_t *chd = lua_newuserdata( L, sizeof( pchild_t ) );
 
-    if( !chd ){
-        return -1;
-    }
     *chd = (pchild_t){
         .pid = pid,
         .fds = { ifd, ofd, efd }
@@ -152,7 +149,8 @@ static inline int kvp2arr( lua_State *L, int idx, array_t *arr, const char *fmt 
         // check key type
         if( lua_type( L, -2 ) != LUA_TSTRING ){
             lua_pop( L, 2 );
-            return EINVAL;
+            errno = EINVAL;
+            return -1;
         }
         // check val type
         switch( lua_type( L, -1 ) ){
@@ -162,7 +160,8 @@ static inline int kvp2arr( lua_State *L, int idx, array_t *arr, const char *fmt 
             break;
             default:
                 lua_pop( L, 2 );
-                return EINVAL;
+                errno = EINVAL;
+                return -1;
         }
 
         // set item
@@ -172,7 +171,7 @@ static inline int kvp2arr( lua_State *L, int idx, array_t *arr, const char *fmt 
         );
         if( !ptr || arr_push( arr, ptr ) == -1 ){
             lua_pop( L, 2 );
-            return errno;
+            return -1;
         }
         lua_pop( L, 2 );
     }
@@ -192,7 +191,8 @@ static inline int ivp2arr( lua_State *L, int idx, array_t *arr )
         // check key type
         if( lua_type( L, -2 ) != LUA_TNUMBER ){
             lua_pop( L, 2 );
-            return EINVAL;
+            errno = EINVAL;
+            return -1;
         }
         // check val type
         switch( lua_type( L, -1 ) ){
@@ -202,12 +202,13 @@ static inline int ivp2arr( lua_State *L, int idx, array_t *arr )
             break;
             default:
                 lua_pop( L, 2 );
-                return EINVAL;
+                errno = EINVAL;
+                return -1;
         }
         // set item
         if( arr_push( arr, (char*)lua_tostring( L, -1 ) ) == -1 ){
             lua_pop( L, 2 );
-            return errno;
+            return -1;
         }
         lua_pop( L, 1 );
     }
@@ -255,24 +256,19 @@ static inline int iop_init( iopipe_t *iop )
 {
     memset( (void*)iop, 0, sizeof( iop ) );
     // create pipes
-    if( pipe( iop->fds ) == 0 )
+    if( pipe( iop->fds ) == 0 &&  pipe( iop->fds + 2 ) == 0 &&
+        pipe( iop->fds + 4 ) == 0 )
     {
-        if( pipe( iop->fds + 2 ) == 0 )
-        {
-            if( pipe( iop->fds + 4 ) == 0 )
-            {
-                int i = 0;
-                
-                for(; i < 6; i++ ){
-                    fcntl( iop->fds[i], F_SETFD, FD_CLOEXEC );
-                }
-                
-                return 0;
-            }
+        int i = 0;
+
+        for(; i < 6; i++ ){
+            fcntl( iop->fds[i], F_SETFD, FD_CLOEXEC );
         }
+
+        return 0;
     }
     iop_dispose( iop );
-    
+
     return -1;
 }
 
@@ -284,9 +280,13 @@ static inline int iop_set( iopipe_t *iop )
     close( iop->fds[IOP_OUT_READ] );
     close( iop->fds[IOP_ERR_READ] );
     // set stdin-read, stdout-write, stderr-write
-    return -( dup2( iop->fds[IOP_IN_READ], STDIN_FILENO ) == -1 || 
-              dup2( iop->fds[IOP_OUT_WRITE], STDOUT_FILENO ) == -1 ||
-              dup2( iop->fds[IOP_ERR_WRITE], STDERR_FILENO ) == -1 );
+    if( dup2( iop->fds[IOP_IN_READ], STDIN_FILENO ) != -1 &&
+        dup2( iop->fds[IOP_OUT_WRITE], STDOUT_FILENO ) != -1 &&
+        dup2( iop->fds[IOP_ERR_WRITE], STDERR_FILENO ) != -1 ){
+        return 0;
+    }
+
+    return -1;
 }
 
 

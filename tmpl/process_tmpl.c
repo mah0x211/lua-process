@@ -482,11 +482,9 @@ static int exec_lua( lua_State *L )
         arr_push( &argv, (char*)cmd ) == -1 ||
         arr_init( &envs, 0 ) == -1 ||
         iop_init( &iop ) == -1 ){
-        arr_dispose( &argv );
-        arr_dispose( &envs );
         lua_pushnil( L );
         lua_pushstring( L, strerror( errno ) );
-        return 2;
+        goto CLEANUP;
     }
     // manipute arg length
     else if( argc > 4 ){
@@ -498,77 +496,52 @@ static int exec_lua( lua_State *L )
     {
         // cwd
         case 4:
-            if( !lua_isnoneornil( L, 4 ) ){
-                pwd = luaL_checkstring( L, 4 );
-            }
+            pwd = lauxh_optstring( L, 4, NULL );
+
         // envs
         case 3:
-            if( !lua_isnoneornil( L, 3 ) )
-            {
-                int rc = kvp2arr( L, 3, &envs, "%s=%s" );
-
-                // got error
-                if( rc != 0 )
-                {
-                    arr_dispose( &argv );
-                    arr_dispose( &envs );
-                    iop_dispose( &iop );
-                    if( rc == EINVAL ){
-                        lua_pushnil( L );
-                        lua_pushliteral( L, "env must be pair table" );
-                    }
-                    else {
-                        lua_pushnil( L );
-                        lua_pushstring( L, strerror( errno ) );
-                    }
-                    return 2;
-                }
+            if( !lua_isnoneornil( L, 3 ) &&
+                // add key-value pairs to environment array
+                ( kvp2arr( L, 3, &envs, "%s=%s" ) == -1 ||
                 // push last NULL item
-                else if( arr_push( &envs, NULL ) == -1 ){
-                    arr_dispose( &argv );
-                    arr_dispose( &envs );
-                    iop_dispose( &iop );
+                  arr_push( &envs, NULL ) == -1 ) )
+            {
+                if( errno == EINVAL ){
+                    lua_pushnil( L );
+                    lua_pushliteral( L, "env must be pair table" );
+                }
+                else {
                     lua_pushnil( L );
                     lua_pushstring( L, strerror( errno ) );
-                    return 2;
                 }
+                goto CLEANUP;
             }
+
         // argv
         case 2:
-            if( !lua_isnoneornil( L, 2 ) )
+            if( !lua_isnoneornil( L, 2 ) && ivp2arr( L, 2, &argv ) == -1 )
             {
-                int rc = ivp2arr( L, 2, &argv );
-
-                // got error
-                if( rc != 0 )
-                {
-                    arr_dispose( &argv );
-                    arr_dispose( &envs );
-                    iop_dispose( &iop );
-                    if( rc == E2BIG ){
-                        lua_pushnil( L );
-                        lua_pushfstring( L, "argv must be less than %d", ARG_MAX );
-                    }
-                    else if( rc == EINVAL ){
-                        lua_pushnil( L );
-                        lua_pushliteral( L, "argv must be ipair table" );
-                    }
-                    else {
-                        lua_pushnil( L );
-                        lua_pushstring( L, strerror( errno ) );
-                    }
-                    return 2;
+                if( errno == E2BIG ){
+                    lua_pushnil( L );
+                    lua_pushfstring( L, "argv must be less than %d", ARG_MAX );
                 }
+                else if( errno == EINVAL ){
+                    lua_pushnil( L );
+                    lua_pushliteral( L, "argv must be ipair table" );
+                }
+                else {
+                    lua_pushnil( L );
+                    lua_pushstring( L, strerror( errno ) );
+                }
+                goto CLEANUP;
             }
+
         // add last NULL terminated item into arg array.
         default:
             if( arr_push( &argv, NULL ) == -1 ){
-                arr_dispose( &argv );
-                arr_dispose( &envs );
-                iop_dispose( &iop );
                 lua_pushnil( L );
                 lua_pushstring( L, strerror( errno ) );
-                return 2;
+                goto CLEANUP;
             }
     }
 
@@ -590,15 +563,15 @@ static int exec_lua( lua_State *L )
         fputs( strerror( errno ), stderr );
         _exit(0);
     }
+    // got error
+    else if( pid == -1 ){
+        lua_pushnil( L );
+        lua_pushstring( L, strerror( errno ) );
+        goto CLEANUP;
+    }
 
     arr_dispose( &argv );
     arr_dispose( &envs );
-    // got error
-    if( pid == -1 ){
-        lua_pushnil( L );
-        lua_pushstring( L, strerror( errno ) );
-        return 2;
-    }
 
     // parent
     // close read-stdin, write-stdout
@@ -624,6 +597,14 @@ static int exec_lua( lua_State *L )
     }
 
     return 1;
+
+
+CLEANUP:
+    arr_dispose( &argv );
+    arr_dispose( &envs );
+    iop_dispose( &iop );
+
+    return 2;
 }
 
 
