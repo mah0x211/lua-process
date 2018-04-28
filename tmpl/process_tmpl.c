@@ -550,17 +550,23 @@ static int exec_lua( lua_State *L )
     if( pid == 0 )
     {
         // set process-working-directory and
+        if( pwd != NULL && chdir( pwd ) == -1 ){
+            perror( "failed to chdir()" );
+        }
         // set std-in-out-err
-        if( ( pwd == NULL || chdir( pwd ) == 0 ) && iop_set( &iop ) == 0 )
+        else if( iop_set( &iop ) != 0 ){
+            perror( "failed to iop_set()" );
+        }
+        else
         {
             if( envs.len ){
                 environ = envs.elts;
             }
             execvp( cmd, argv.elts );
+            perror( "failed to execvp()" );
         }
         arr_dispose( &argv );
         arr_dispose( &envs );
-        fputs( strerror( errno ), stderr );
         _exit(0);
     }
     // got error
