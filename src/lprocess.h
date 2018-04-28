@@ -109,6 +109,7 @@ static inline void arr_dispose( array_t *arr )
 {
     if( arr->elts ){
         free( (void*)arr->elts );
+        arr->elts = NULL;
     }
 }
 
