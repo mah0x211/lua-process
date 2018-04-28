@@ -4,19 +4,19 @@ local fork = require('process').fork;
 local exec = require('process').exec;
 local waitpid = require('process').waitpid;
 local env = require('process').getenv();
-local cmd = './exec_test.lua';
+local pathname = './exec_test.lua';
 local argv = { 'hello', 'world' };
 local cmp = cjson.encode(cjson.decode(cjson.encode({
     [1] = "hello",
     [2] = "world",
     [-1] = "lua",
-    [0] = cmd,
+    [0] = pathname,
     stdin = argv,
 })));
-local pid, msg;
+local cmd, pid, msg, err, again;
 
 -- set env
-cmd = ifNil( exec( cmd, argv, env, './' ) );
+cmd = ifNil( exec( pathname, argv, env, './' ) );
 
 pid = ifNil( cmd:pid() );
 ifNotEqual( type( pid ), 'number' );
@@ -38,7 +38,7 @@ ifNotEqual( cmp, msg );
 -- close test
 local function close( sec )
     local chd = ifNil( fork() );
-    
+
     if chd == 0 then
         if sec then
             sleep(sec);
@@ -52,4 +52,30 @@ close(1);
 local status = waitpid( pid );
 ifNotEqual( status.pid, pid );
 ifNotEqual( status.termsig, signal.SIGTERM );
+
+
+-- with nonblock
+cmd = ifNil( exec( pathname, argv, env, nil, true ) );
+
+-- send msg: should append LF
+msg = cjson.encode( argv ) .. '\n';
+ifNotEqual( cmd:stdin( msg ), #msg );
+
+-- read json from stdout
+repeat
+    msg, err, again = cmd:stdout();
+until not again;
+ifNil( msg, err );
+msg = cjson.decode( msg );
+msg = cjson.encode( msg );
+ifNotEqual( cmp, msg );
+
+-- read json from stderr
+repeat
+    msg, err, again = cmd:stderr();
+until not again;
+ifNil( msg, err );
+msg = cjson.decode( msg );
+msg = cjson.encode( msg );
+ifNotEqual( cmp, msg );
 
