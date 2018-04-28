@@ -66,18 +66,18 @@ static int getppid_lua( lua_State *L )
 
 
 // MARK: user/group id
-#define getuinfo(dest,getter,arg,t,field) do{ \
-    t *info = NULL; \
-    errno = 0; \
-    if( ( info = getter( arg ) ) ){ \
-        *dest = info->field; \
-        return 0; \
-    } \
-    /* not found */ \
-    else if( !errno ){ \
-        errno = EINVAL; \
-    } \
-    return -1; \
+#define getuinfo(dest,getter,arg,t,field) do{   \
+    t *info = NULL;                             \
+    errno = 0;                                  \
+    if( ( info = getter( arg ) ) ){             \
+        *dest = info->field;                    \
+        return 0;                               \
+    }                                           \
+    /* not found */                             \
+    else if( !errno ){                          \
+        errno = EINVAL;                         \
+    }                                           \
+    return -1;                                  \
 }while(0)
 
 
@@ -105,94 +105,96 @@ static inline int gid2gname( const char **gname, gid_t gid )
 }
 
 
-#define getid_lua(L,t,name2id,getid) do { \
-    size_t len = 0; \
+#define getid_lua(L,t,name2id,getid) do {                   \
+    size_t len = 0;                                         \
     const char *name = luaL_optlstring( L, 1, NULL, &len ); \
-    if( len ){ \
-        t id = 0; \
-        /* not found */ \
-        if( name2id( &id, name ) != 0 ){ \
-            lua_pushnil( L ); \
-            lua_pushstring( L, strerror( errno ) ); \
-            return 2; \
-        } \
-        /* push id */ \
-        else { \
-            lua_pushinteger( L, id ); \
-        } \
-    } \
-    /* return id of current process */ \
-    else { \
-        lua_pushinteger( L, getid() ); \
-    } \
-    return 1; \
+    if( len ){                                              \
+        t id = 0;                                           \
+        /* not found */                                     \
+        if( name2id( &id, name ) != 0 ){                    \
+            lua_pushnil( L );                               \
+            lua_pushstring( L, strerror( errno ) );         \
+            return 2;                                       \
+        }                                                   \
+        /* push id */                                       \
+        else {                                              \
+            lua_pushinteger( L, id );                       \
+        }                                                   \
+    }                                                       \
+    /* return id of current process */                      \
+    else {                                                  \
+        lua_pushinteger( L, getid() );                      \
+    }                                                       \
+    return 1;                                               \
 }while(0)
 
 
-#define getname_lua(L,t,id2name,getid) do { \
-    t id = (t)(lua_isnoneornil( L, 1 ) ? getid() : luaL_checkinteger( L, 1 )); \
-    const char *name = NULL; \
-    /* not found */ \
-    if( id2name( &name, id ) != 0 ){ \
-        lua_pushnil( L ); \
+#define getname_lua(L,t,id2name,getid) do {     \
+    t id = (t)(lua_isnoneornil( L, 1 ) ?        \
+               getid() :                        \
+               luaL_checkinteger( L, 1 ));      \
+    const char *name = NULL;                    \
+    /* not found */                             \
+    if( id2name( &name, id ) != 0 ){            \
+        lua_pushnil( L );                       \
         lua_pushstring( L, strerror( errno ) ); \
-        return 2; \
-    } \
-    /* push name */ \
-    lua_pushstring( L, name ); \
-    return 1; \
+        return 2;                               \
+    }                                           \
+    /* push name */                             \
+    lua_pushstring( L, name );                  \
+    return 1;                                   \
 }while(0)
 
 
-#define setid_lua(L,t,name2id,setid) do { \
-    t id = 0; \
-    if( lua_type( L, 1 ) == LUA_TSTRING ){ \
-        const char *name = luaL_checkstring( L, 1 ); \
-        /* set id by name */ \
-        if( name2id( &id, name ) == 0 && setid( id ) == 0 ){ \
-            return 0; \
-        } \
-    } \
-    else { \
-        id = (t)luaL_checkinteger( L, 1 ); \
-        if( setid( id ) == 0 ){ \
-            return 0; \
-        } \
-    } \
-    /* got error */ \
-    lua_pushstring( L, strerror( errno ) ); \
-    return 1; \
+#define setid_lua(L,t,name2id,setid) do {                       \
+    t id = 0;                                                   \
+    if( lua_type( L, 1 ) == LUA_TSTRING ){                      \
+        const char *name = luaL_checkstring( L, 1 );            \
+        /* set id by name */                                    \
+        if( name2id( &id, name ) == 0 && setid( id ) == 0 ){    \
+            return 0;                                           \
+        }                                                       \
+    }                                                           \
+    else {                                                      \
+        id = (t)luaL_checkinteger( L, 1 );                      \
+        if( setid( id ) == 0 ){                                 \
+            return 0;                                           \
+        }                                                       \
+    }                                                           \
+    /* got error */                                             \
+    lua_pushstring( L, strerror( errno ) );                     \
+    return 1;                                                   \
 }while(0)
 
 
-#define setreid_lua(L,t,name2id,setid) do { \
-    const char *name = NULL; \
-    t rid = 0; \
-    t eid = 0; \
-    if( lua_type( L, 1 ) == LUA_TSTRING ){ \
-        name = luaL_checkstring( L, 1 ); \
-        if( name2id( &rid, name ) != 0 ){ \
-            goto FAILURE; \
-        } \
-    } \
-    else { \
-        rid = (t)luaL_checkinteger( L, 1 ); \
-    } \
-    if( lua_type( L, 2 ) == LUA_TSTRING ){ \
-        name = luaL_checkstring( L, 2 ); \
-        if( name2id( &eid, name ) != 0 ){ \
-            goto FAILURE; \
-        } \
-    } \
-    else { \
-        eid = (t)luaL_checkinteger( L, 2 ); \
-    } \
-    if( setid( rid, eid ) == 0 ){ \
-        return 0; \
-    } \
-FAILURE: \
-    /* got error */ \
-    lua_pushstring( L, strerror( errno ) ); \
+#define setreid_lua(L,t,name2id,setid) do {     \
+    const char *name = NULL;                    \
+    t rid = 0;                                  \
+    t eid = 0;                                  \
+    if( lua_type( L, 1 ) == LUA_TSTRING ){      \
+        name = luaL_checkstring( L, 1 );        \
+        if( name2id( &rid, name ) != 0 ){       \
+            goto FAILURE;                       \
+        }                                       \
+    }                                           \
+    else {                                      \
+        rid = (t)luaL_checkinteger( L, 1 );     \
+    }                                           \
+    if( lua_type( L, 2 ) == LUA_TSTRING ){      \
+        name = luaL_checkstring( L, 2 );        \
+        if( name2id( &eid, name ) != 0 ){       \
+            goto FAILURE;                       \
+        }                                       \
+    }                                           \
+    else {                                      \
+        eid = (t)luaL_checkinteger( L, 2 );     \
+    }                                           \
+    if( setid( rid, eid ) == 0 ){               \
+        return 0;                               \
+    }                                           \
+FAILURE:                                        \
+    /* got error */                             \
+    lua_pushstring( L, strerror( errno ) );     \
     return 1; \
 }while(0);
 
@@ -470,7 +472,6 @@ static int exec_lua( lua_State *L )
     int argc = lua_gettop( L );
     const char *cmd = luaL_checkstring( L, 1 );
     pid_t pid = 0;
-    int rc = 0;
     array_t argv = {
         .elts = NULL,
         .len = 0,
@@ -521,7 +522,8 @@ static int exec_lua( lua_State *L )
         case 3:
             if( !lua_isnoneornil( L, 3 ) )
             {
-                rc = kvp2arr( L, 3, &envs, "%s=%s" );
+                int rc = kvp2arr( L, 3, &envs, "%s=%s" );
+
                 // got error
                 if( rc != 0 )
                 {
@@ -552,7 +554,8 @@ static int exec_lua( lua_State *L )
         case 2:
             if( !lua_isnoneornil( L, 2 ) )
             {
-                rc = ivp2arr( L, 2, &argv );
+                int rc = ivp2arr( L, 2, &argv );
+
                 // got error
                 if( rc != 0 )
                 {
@@ -624,8 +627,9 @@ static int exec_lua( lua_State *L )
         // kill process safety
         if( kill( pid, SIGTERM ) == 0 )
         {
+            int rc = 0;
+
             sleep(1);
-            rc = 0;
             if( waitpid( pid, &rc, WNOHANG ) == 0 ){
                 kill( pid, SIGKILL );
             }
