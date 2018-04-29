@@ -230,12 +230,10 @@ typedef enum {
 
 
 typedef struct {
-    int nonblock;
     int fds[6];
 } iopipe_t;
 
 #define iop_no_value (iopipe_t){    \
-    .nonblock = 0,                  \
     .fds = {}                       \
 }
 
@@ -289,14 +287,10 @@ static inline int setnonblock( int fd )
 
 static inline int iop_setnonblock( iopipe_t *iop )
 {
-    int i = 0;
-
-    iop->nonblock = 1;
-    for(; i < 6; i++ )
-    {
-        if( setnonblock( iop->fds[i] ) == -1 ){
-            return -1;
-        }
+    if( setnonblock( iop->fds[IOP_IN_WRITE] ) == -1 ||
+        setnonblock( iop->fds[IOP_OUT_READ] ) == -1 ||
+        setnonblock( iop->fds[IOP_ERR_READ] ) == -1 ){
+        return -1;
     }
 
     return 0;
@@ -312,11 +306,7 @@ static inline int iop_set( iopipe_t *iop )
     // set stdin-read, stdout-write, stderr-write
     if( dup2( iop->fds[IOP_IN_READ], STDIN_FILENO ) != -1 &&
         dup2( iop->fds[IOP_OUT_WRITE], STDOUT_FILENO ) != -1 &&
-        dup2( iop->fds[IOP_ERR_WRITE], STDERR_FILENO ) != -1 &&
-        ( !iop->nonblock ||
-          ( setnonblock( STDIN_FILENO ) == 0 &&
-            setnonblock( STDOUT_FILENO ) == 0 &&
-            setnonblock( STDERR_FILENO ) == 0 ) ) ){
+        dup2( iop->fds[IOP_ERR_WRITE], STDERR_FILENO ) != -1 ){
         return 0;
     }
 
