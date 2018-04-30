@@ -471,6 +471,18 @@ get process id.
 - `pid:number`: process id.
 
 
+### fdin, fdout, fderr = child:fds()
+
+get file descriptors of stdin, stdout and stderr.
+
+
+**Returns**
+
+- `fdin:number`: stdin file descriptor.
+- `fdout:number`: stdout file descriptor.
+- `fderr:number`: stderr file descriptor.
+
+
 ### data, err, again = child:stdout()
 
 read the data from stdout of child process.
