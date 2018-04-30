@@ -121,6 +121,19 @@ static int kill_lua( lua_State *L )
 }
 
 
+static int fds_lua( lua_State *L )
+{
+    pchild_t *chd = luaL_checkudata( L, 1, PROCESS_CHILD_MT );
+
+    // return stdin, stdout and stderr descriptors
+    lua_pushinteger( L, chd->fds[0] );
+    lua_pushinteger( L, chd->fds[1] );
+    lua_pushinteger( L, chd->fds[2] );
+
+    return 3;
+}
+
+
 static int pid_lua( lua_State *L )
 {
     pchild_t *chd = luaL_checkudata( L, 1, PROCESS_CHILD_MT );
@@ -164,6 +177,7 @@ LUALIB_API int luaopen_process_child( lua_State *L )
     };
     struct luaL_Reg method[] = {
         { "pid", pid_lua },
+        { "fds", fds_lua },
         { "kill", kill_lua },
         { "stdin", stdin_lua },
         { "stdout", stdout_lua },
