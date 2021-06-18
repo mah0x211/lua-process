@@ -1,7 +1,8 @@
+rockspec_format = "3.0"
 package = "process"
 version = "scm-1"
 source = {
-    url = "gitrec://github.com/mah0x211/lua-process.git"
+    url = "git+https://github.com/mah0x211/lua-process.git"
 }
 description = {
     summary = "process module",
@@ -11,7 +12,6 @@ description = {
 }
 dependencies = {
     "lua >= 5.1",
-    "luarocks-fetch-gitrec >= 0.2"
 }
 build = {
     type = "make",
@@ -34,4 +34,3 @@ build = {
         LIB_EXTENSION   = "$(LIB_EXTENSION)"
     }
 }
-
